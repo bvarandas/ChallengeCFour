@@ -1,0 +1,12 @@
+﻿using ChallengeCrf.Domain.Commands;
+using ChallengeCrf.Domain.Models;
+namespace ChallengeCrf.Domain.Interfaces;
+public interface ICashFlowService
+{
+    Task<IEnumerable<CashFlow>> GetListAllAsync();
+    Task<CashFlow> GetCashFlowyIDAsync(int registerId);
+    Task<CashFlowCommand> AddCashFlowAsync(CashFlow register);
+    Task<CashFlowCommand> UpdateCashFlowAsync(CashFlow register);
+    IList<CashFlowHistoryData> GetAllHistory(int registerId);
+    void RemoveCashFlowAsync(int registerId);
+}
