@@ -14,7 +14,7 @@ namespace ChallengeCrf.Infra.Data.Mappings
         public void Configure( EntityTypeBuilder<CashFlow> builder)
         {
             builder.Property(c => c.CashFlowId)
-                .HasColumnName("RegisterId").
+                .HasColumnName("CashFlowId").
                 ValueGeneratedOnAdd();
 
             builder.Property(c => c.Description)

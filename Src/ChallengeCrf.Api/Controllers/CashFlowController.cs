@@ -1,20 +1,18 @@
 ﻿using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Win32;
-using System;
 
 namespace ChallengeCrf.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RegisterController : ControllerBase
+public class CashFlowController : ControllerBase
 {
-	private readonly ILogger<RegisterController> _logger;
+	private readonly ILogger<CashFlowController> _logger;
 	private readonly IQueueProducer _queueProducer;
     private readonly IQueueConsumer _queueConsumer;
 
-    public RegisterController(ILogger<RegisterController> logger, 
+    public CashFlowController(ILogger<CashFlowController> logger, 
         IQueueProducer queueProducer,
         IQueueConsumer queueConsumer        )
 	{
@@ -26,12 +24,12 @@ public class RegisterController : ControllerBase
     }
 
     [HttpDelete("{registerId}")]
-    public IActionResult DeleteRegister(int registerId)
+    public IActionResult DeleteRegister(int cashFlowId)
     {
         try
         {
-            var register = new CashFlow(registerId,string.Empty, 0, string.Empty, DateTime.MinValue, "remove");
-            _queueProducer.PublishMessage(register);
+            var cash = new CashFlow(cashFlowId, string.Empty, 0, string.Empty, DateTime.MinValue, "remove");
+            _queueProducer.PublishMessage(cash);
 
             return Accepted();
         }
@@ -43,14 +41,14 @@ public class RegisterController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult InsertRegister(CashFlow register)
+    public IActionResult InsertRegister(CashFlow cash)
     {
 		try
 		{
-            register.Action = "insert";
-			_queueProducer.PublishMessage(register);
+            cash.Action = "insert";
+			_queueProducer.PublishMessage(cash);
 
-			return Accepted(register);
+			return Accepted(cash);
 		}
 		catch (Exception ex)
 		{
@@ -61,14 +59,14 @@ public class RegisterController : ControllerBase
 
 
     [HttpPut]
-    public IActionResult UpdateRegister(CashFlow register)
+    public IActionResult UpdateRegister(CashFlow cash)
     {
         try
         {
-            register.Action = "update";
-            _queueProducer.PublishMessage(register);
+            cash.Action = "update";
+            _queueProducer.PublishMessage(cash);
 
-            return Accepted(register);
+            return Accepted(cash);
         }
         catch (Exception ex)
         {
@@ -82,8 +80,8 @@ public class RegisterController : ControllerBase
     {
         try
 		{
-            var register = new CashFlow() { Action = "getall" };
-            _queueProducer.PublishMessage(register);
+            var cash = new CashFlow() { Action = "getall" };
+            _queueProducer.PublishMessage(cash);
             
 			return Ok();
 		}
@@ -95,16 +93,16 @@ public class RegisterController : ControllerBase
 	}
 
 
-    [HttpGet("{registerId}")]
-    public IActionResult GetRegister(int registerId)
+    [HttpGet("{cashFlowId}")]
+    public IActionResult GetRegister(int cashFlowId)
     {
         try
         {
-            var register = new CashFlow() { Action = "get", CashFlowId=registerId };
+            var register = new CashFlow() { Action = "get", CashFlowId=cashFlowId };
             //_queueProducer.PublishMessage(register);
             //_registerService.GetRegisterByIDAsync(registerId);
 
-            return Ok(_queueConsumer.RegisterGetById(registerId));
+            return Ok(_queueConsumer.RegisterGetById(cashFlowId));
         }
         catch (Exception ex)
         {
