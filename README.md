@@ -1,5 +1,5 @@
 # ChallengeCrf
-Projeto de desafio porposto pelo time desenvolvimento do Banco Carefour.
+Projeto de desafio porposto pelo time desenvolvimento do Banco Carrefour.
 Com SignalR, segue o  video.
 
 Projeto se propoe a fazer um crud com patterns de mercado e mecanismos usados em soluções no mercado de capitais, 
