@@ -1,8 +1,6 @@
-# ChallengeB3
-Projeto de desafio porposto pelo time desenvolvimento da B3.
+# ChallengeCrf
+Projeto de desafio porposto pelo time desenvolvimento do Banco Carefour.
 Com SignalR, segue o  video.
-
-https://www.youtube.com/watch?v=r0Zz6fP6Krk
 
 Projeto se propoe a fazer um crud com patterns de mercado e mecanismos usados em soluções no mercado de capitais, 
 como mesageria e bibliotecas de compressão de dados para camada de transporte como protobuf.
