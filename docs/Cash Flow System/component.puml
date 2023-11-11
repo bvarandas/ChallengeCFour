@@ -1,0 +1,33 @@
+@startuml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Component.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/devicons/go.puml
+
+Person(pbc, "Accountant", "A user entry the cash flow information of debit/credit.")
+
+System_Boundary(cfs, "Cash Flow Systen"){
+    
+    ComponentApp(spa, "Single Page Application", "javascript and angular", "Provides all the internet banking functionality to customers via their web browser.")
+    ComponentDb(db, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+    ComponentApp(api, "API Application", "Controller", "Provides internet banking functionality via a JSON/HTTP API.")
+    ComponentApp(app, "Application", "CommandHandler", "Provides internet banking functionality via a JSON/HTTP API.")
+    ComponentApp(cdc, "Daily Consolidated", "Scheduled Background Task", "Provides register of Consolidated Daily Information")   
+    ComponentQueue(rmq, "RabbitMq", "Queue", "Publication Cash Flow/Daily Consolitated")
+
+}
+
+Rel(pbc, spa, "Uses", "HTTP")
+
+
+
+Rel(cdc, rmq, "Delivers", "Protobuf")
+Rel(spa, api, "Delivers", "JSON")
+Rel(api, app, "Delivers", "Command")
+Rel(app, rmq, "Sends to", "Protobuf")
+Rel(db, api, "Reads from", "Entity Framework")
+Rel(rmq, db, "Writes to", "Entity Framework")
+
+LAYOUT_WITH_LEGEND()
+
+@enduml

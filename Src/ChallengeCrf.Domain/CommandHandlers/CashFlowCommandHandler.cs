@@ -23,6 +23,7 @@ public class CashFlowCommandHandler : CommandHandler,
     {
         _registerRepository = registerRepository;
         _bus = bus;
+        
     }
 
     public async Task<bool> Handle(InsertCashFlowCommand command, CancellationToken cancellationToken)
