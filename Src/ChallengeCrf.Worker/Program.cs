@@ -21,6 +21,8 @@ using ChallengeCrf.Infra.CrossCutting.Bus;
 using ChallengeCrf.Infra.Data.EventSourcing;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using MediatR;
+using MongoFramework;
+using Microsoft.Extensions.DependencyInjection;
 
 var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -28,8 +30,7 @@ var config = new ConfigurationBuilder()
             .AddEnvironmentVariables()
             .Build();
 
-try
-{
+
     IHost host = Host.CreateDefaultBuilder(args)
         .ConfigureAppConfiguration(builder =>
         {
@@ -63,7 +64,7 @@ try
             services.AddSingleton<ICashFlowRepository, CashFlowRepository>();
 
             services.AddSingleton<IUnitOfWork, UnitOfWork>();
-            services.AddSingleton<DbContextClass>();
+            services.AddSingleton<CashFlowContext>();
 
             // Infra - Data EventSourcing
             services.AddSingleton<IEventStoreRepository, EventStoreSQLRepository>();
@@ -75,7 +76,15 @@ try
             services.AddHostedService<WorkerConsumer>();
 
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
-            
+            services.AddTransient<IMongoDbConnection>(( provider) => 
+            {
+                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@mongo:27017/");
+
+                return MongoDbConnection.FromUrl(urlMongo);
+            });
+
+            services.Configure<CashFlowSettings>(config.GetSection("CashFlowStoreDatabase"));
+
             services.AddAutoMapperSetup();
 
             services.AddMediatR(cfg =>
@@ -87,10 +96,3 @@ try
         })
         .Build();
     await host.RunAsync();
-}
-catch(Exception ex)
-{
-    
-}
-
-

@@ -46,11 +46,13 @@ public class NativeInjectorBootStrapper
         services.AddScoped<ICashFlowRepository, CashFlowRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<DbContextClass>();
+        services.AddScoped<CashFlowContext>();
 
         // Infra - Data EventSourcing
         services.AddScoped<IEventStoreRepository, EventStoreSQLRepository>();
         services.AddScoped<IEventStore, SqlEventStore>();
         services.AddScoped<EventStoreSqlContext>();
+
+        
     }
 }

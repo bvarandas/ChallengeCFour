@@ -1,17 +1,19 @@
 ﻿using ProtoBuf;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ChallengeCrf.Domain.Models;
 
-[Table("tb_CashFlow")]
+
 [ProtoContract]
 public sealed class CashFlow 
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     [ProtoMember(1)]
-    public int CashFlowId { get; set; }
+    public string CashFlowId { get; set; }
     [ProtoMember(2)]
     public string Description { get; set; } = string.Empty;
     
@@ -28,7 +30,9 @@ public sealed class CashFlow
     [ProtoMember(6)]
     public string Action { get; set; } =string.Empty;
 
-    public CashFlow(int registerId, string description, double cashValue, string entry, DateTime date, string action)
+    [ProtoMember(7)]
+    public DailyConsolidated DailyConsolidated { get; set; } = null!;
+    public CashFlow(string registerId, string description, double cashValue, string entry, DateTime date, string action)
     {
         CashFlowId = registerId;
         Description = description;

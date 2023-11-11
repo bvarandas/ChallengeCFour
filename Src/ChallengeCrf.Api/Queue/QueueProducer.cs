@@ -9,9 +9,9 @@ namespace ChallengeCrf.Api.Producer;
 public class QueueProducer : BackgroundService, IQueueProducer
 {
     private readonly QueueCommandSettings _queueSettings;
-    private readonly ConnectionFactory _factory;
-    private readonly IModel _channel;
-    private readonly IConnection _connection;
+    private readonly ConnectionFactory _factory = null!;
+    private readonly IModel _channel = null!;
+    private readonly IConnection _connection = null!;
     private readonly ILogger<QueueProducer> _logger;
     public QueueProducer(IOptions<QueueCommandSettings> queueSettings, ILogger<QueueProducer> logger)
     {

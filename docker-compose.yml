@@ -13,34 +13,15 @@ services:
             - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
         networks: 
             - rabbitmq_go_net
-    
-    mssqldata:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        entrypoint: /bin/bash            
-        
-    ChallengeCrf.Infra.Data:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        container_name: challengecrf.infra.data
-        ports:
-            - 1433:1433
-        volumes:
-            - /var/opt/mssql
-            # we copy our scripts onto the container
-            - ./:/usr/src/app
-        working_dir: /usr/src/app 
-        
-        environment:
-            SA_PASSWORD: "Mssql2@19"
-            ACCEPT_EULA: "Y"
-            MSSQL_PID: "Express"
-        
-        command:  >
-            bash -c '
-            /opt/mssql-tools/bin/sqlcmd -S ChallengeCrf.Infra.Data -U sa -P Mssql2@19 -i createdbchallengecrf.sql;
-            echo "All done!";
-            '
-        volumes_from:
-            - mssqldata
+
+    mongo:
+      image: mongo
+      restart: always
+      ports:
+        - 27017:27017
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: example
 
     ChallengeCrf.Queue.Worker:
         image: challengecrf.queue.worker

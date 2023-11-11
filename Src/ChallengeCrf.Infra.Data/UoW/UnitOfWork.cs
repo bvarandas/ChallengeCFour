@@ -5,23 +5,25 @@ namespace ChallengeCrf.Infra.Data.UoW;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContextClass _dbContext;
+    private readonly CashFlowContext _dbContext;
 
-    public UnitOfWork(DbContextClass dbContext)
+    public UnitOfWork(CashFlowContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public bool Commit()
+    public async Task<bool> Commit()
     {
         bool trySave = false;
         try
         {
-            trySave = _dbContext.SaveChanges() > 0;
+            trySave = true;
+            
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-
+            trySave = false;
         }
         return trySave;
     }

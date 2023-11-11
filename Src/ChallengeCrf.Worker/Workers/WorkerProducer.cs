@@ -16,8 +16,7 @@ public class WorkerProducer :  IWorkerProducer
     private readonly ConnectionFactory _factory;
     private readonly IModel _channel;
     private readonly IConnection _connection;
-
-    private static WorkerProducer _instance;
+    private static WorkerProducer _instance = null!;
 
     public static WorkerProducer  _Singleton
     {
@@ -27,7 +26,7 @@ public class WorkerProducer :  IWorkerProducer
         }
 
     }
-
+    
     public WorkerProducer(IOptions<QueueEventSettings> queueSettings, ILogger<WorkerProducer> logger)
     {
         _logger = logger;
@@ -45,7 +44,7 @@ public class WorkerProducer :  IWorkerProducer
         arguments: null);
     }
 
-    public async Task PublishMessage(CashFlow message)
+    public Task PublishMessage(CashFlow message)
     {
         try
         {
@@ -62,9 +61,10 @@ public class WorkerProducer :  IWorkerProducer
         {
             _logger.LogError(ex, $"{ex.Message}");
         }
+        return Task.CompletedTask;
     }
 
-    public async Task PublishMessages(List<CashFlow> messageList)
+    public Task PublishMessages(List<CashFlow> messageList)
     {
         try
         {
@@ -86,9 +86,9 @@ public class WorkerProducer :  IWorkerProducer
         }
         catch (Exception ex)
         {
-            //_channel.
             _logger.LogError(ex, $"{ex.Message}");
         }
+        return Task.CompletedTask;
     }
 
     public  async Task ExecuteAsync(CancellationToken stoppingToken)

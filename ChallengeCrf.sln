@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{9051D15C-6C46-49DF-A56A-65127CF9A8EC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-Presentation", "1-Presentation", "{753B41B0-1C37-47D3-94A5-2318CFAE3604}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-API", "1-API", "{753B41B0-1C37-47D3-94A5-2318CFAE3604}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-Services", "2-Services", "{416A640C-966D-454B-A81C-A300233BD537}"
 EndProject
@@ -34,11 +34,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Api", "Src\ChallengeCrf.Api\ChallengeCrf.Api.csproj", "{BFA6FA49-0213-44F1-81C6-D09A7C3126D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Front", "Front", "{46397C4C-1075-4A5B-BCB7-13262378EE49}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5.3-DataBaseScripts", "5.3-DataBaseScripts", "{08CB4594-07FB-4454-935F-450651771EA5}"
-	ProjectSection(SolutionItems) = preProject
-		CreateDdbChallengeCrf.sql = CreateDdbChallengeCrf.sql
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,7 +89,6 @@ Global
 		{0184E822-B3FB-45FB-A921-50EEAC9747E0} = {416A640C-966D-454B-A81C-A300233BD537}
 		{BFA6FA49-0213-44F1-81C6-D09A7C3126D5} = {753B41B0-1C37-47D3-94A5-2318CFAE3604}
 		{46397C4C-1075-4A5B-BCB7-13262378EE49} = {753B41B0-1C37-47D3-94A5-2318CFAE3604}
-		{08CB4594-07FB-4454-935F-450651771EA5} = {4D7BCAB4-C4AD-452A-B23E-E5488769FB8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4DC49C0B-C4B4-4192-86C4-E29D6503E22A}

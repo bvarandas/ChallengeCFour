@@ -4,9 +4,9 @@ namespace ChallengeCrf.Domain.Interfaces;
 public interface ICashFlowService
 {
     Task<IEnumerable<CashFlow>> GetListAllAsync();
-    Task<CashFlow> GetCashFlowyIDAsync(int registerId);
+    Task<CashFlow> GetCashFlowyIDAsync(string cashFlowId);
     Task<CashFlowCommand> AddCashFlowAsync(CashFlow register);
     Task<CashFlowCommand> UpdateCashFlowAsync(CashFlow register);
     IList<CashFlowHistoryData> GetAllHistory(int registerId);
-    void RemoveCashFlowAsync(int registerId);
+    void RemoveCashFlowAsync(string cashFlowId);
 }

@@ -20,7 +20,7 @@ namespace ChallengeCrf.Api.Producer
         private readonly IModel _channel;
         private readonly IServiceProvider _serviceProvider;
 
-        private readonly Dictionary<int, CashFlow> _flows;
+        private readonly Dictionary<string, CashFlow> _flows;
         public QueueConsumer(
             IOptions<QueueEventSettings> queueSettings, 
             ILogger<QueueConsumer> logger,
@@ -35,7 +35,7 @@ namespace ChallengeCrf.Api.Producer
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
             _serviceProvider = provider;
-            _flows = new Dictionary<int, CashFlow>();
+            _flows = new Dictionary<string, CashFlow>();
         }
 
         public  async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,22 +44,16 @@ namespace ChallengeCrf.Api.Producer
             
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += Consumer_Received;
-            try
-            {
-                _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
-            }catch(Exception ex)
-            {
-
-            }
+            
+            _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
+            
             while (!stoppingToken.IsCancellationRequested)
             {
-                //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(_queueSettings.Interval, stoppingToken);
             }
-
         }
 
-        public CashFlow RegisterGetById(int registerId)
+        public CashFlow RegisterGetById(string registerId)
         {
             return _flows[registerId];
         }

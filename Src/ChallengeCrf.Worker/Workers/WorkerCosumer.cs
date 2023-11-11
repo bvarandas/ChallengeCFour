@@ -98,57 +98,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
 
         }catch (Exception ex) 
         {
+            _logger.LogError(ex.Message, ex);
             _channel.BasicNack(e.DeliveryTag, false, true);
         }
     }
-
-    //private async void DequeueRegisterStatus()
-    //{
-    //    try
-    //    {
-    //        if (_queueRegister.TryDequeue(out CashFlow message))
-    //        {
-    //            switch(message.Status.ToLower())
-    //            {
-    //                case "com defeito":
-    //                    message.Status = "Em conserto";
-    //                    _queueRegister.Enqueue(message);
-    //                    await _registerService.UpdateRegisterAsync(message);
-
-    //                    break;
-
-    //                case "em conserto":
-    //                    message.Status = "Reparado";
-    //                    _queueRegister.Enqueue(message);
-    //                    await _registerService.UpdateRegisterAsync(message);
-
-    //                    break;
-
-    //                case "reparado":
-    //                    message.Status = "Devolvido";
-    //                    _queueRegister.Enqueue(message);
-    //                    await _registerService.UpdateRegisterAsync(message);
-    //                    break;
-
-    //                case "devolvido":
-    //                    message.Status = "Faturado";
-    //                    _queueRegister.Enqueue(message);
-    //                    await _registerService.UpdateRegisterAsync(message);
-    //                    break;
-
-    //                case "faturado":
-    //                    break;
-
-    //            }
-                
-    //        }
-    //        var registerlist = await _registerService.GetListAllAsync();
-    //        await WorkerProducer._Singleton.PublishMessages(registerlist.ToList());
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError("DequeueRegisterStatus", ex.Message);
-            
-    //    }
-    //}
 }

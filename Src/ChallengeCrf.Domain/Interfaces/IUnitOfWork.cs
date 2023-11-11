@@ -8,5 +8,5 @@ namespace ChallengeCrf.Domain.Interfaces;
 
 public interface IUnitOfWork
 {
-    bool Commit();
+    Task<bool> Commit();
 }

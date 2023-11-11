@@ -37,7 +37,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         await _registerRepository.AddCashFlowAsync(register);
 
-        if (Commit())
+        if (await Commit())
         {
             await _bus.RaiseEvent(new CashFlowInsertedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date , register.Action));
         }
@@ -56,7 +56,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         await _registerRepository.UpdateCashFlowAsync(register);
 
-        if (Commit())
+        if (await Commit())
         {
             await _bus.RaiseEvent(new CashFlowUpdatedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date));
         }
@@ -64,22 +64,22 @@ public class CashFlowCommandHandler : CommandHandler,
         return await Task.FromResult(true);
     }
 
-    public Task<bool> Handle(RemoveCashFlowCommand command, CancellationToken cancellationToken)
+    public async Task<bool> Handle(RemoveCashFlowCommand command, CancellationToken cancellationToken)
     {
         if (!command.IsValid())
         {
             NotifyValidationErrors(command);
-            return Task.FromResult(false);
+            return await Task.FromResult(false);
         }
 
         _registerRepository.DeleteCashFlowAsync(command.RegisterId);
 
-        if (Commit())
+        if (await Commit())
         {
-            _bus.RaiseEvent(new CashFlowRemovedEvent(command.RegisterId));
+            await _bus.RaiseEvent(new CashFlowRemovedEvent(command.RegisterId));
         }
 
-        return Task.FromResult(true);
+        return await Task.FromResult(true);
     }
     public void Dispose()
     {

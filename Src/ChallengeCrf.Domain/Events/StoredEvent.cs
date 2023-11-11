@@ -25,6 +25,5 @@ namespace ChallengeCrf.Domain.Events
             User = user;
         }
 
-        protected StoredEvent() { }
     }
 }

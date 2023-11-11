@@ -30,12 +30,10 @@ public  class CashFlowService : ICashFlowService
         return await _cashFlowRepository.GetAllCashFlowAsync();
     }
 
-    public async Task<CashFlow> GetCashFlowyIDAsync(int registerId)
+    public async Task<CashFlow> GetCashFlowyIDAsync(string cashFlowId)
     {
-        return await _cashFlowRepository.GetCashFlowByIDAsync(registerId);
+        return await _cashFlowRepository.GetCashFlowByIDAsync(cashFlowId);
     }
-
-    
 
     public async Task<CashFlowCommand> AddCashFlowAsync(CashFlow register)
     {
@@ -53,9 +51,9 @@ public  class CashFlowService : ICashFlowService
         return updateCommand;
     }
 
-    public async void RemoveCashFlowAsync(int registerId)
+    public async void RemoveCashFlowAsync(string cashFlowId)
     {
-        var deleteCommand = new RemoveCashFlowCommand(registerId);
+        var deleteCommand = new RemoveCashFlowCommand(cashFlowId);
         await _bus.SendCommand(deleteCommand);
     }
 

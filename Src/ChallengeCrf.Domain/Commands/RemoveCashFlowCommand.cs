@@ -9,7 +9,7 @@ namespace ChallengeCrf.Domain.Commands;
 
 public class RemoveCashFlowCommand : CashFlowCommand
 {
-    public RemoveCashFlowCommand(int registerId)
+    public RemoveCashFlowCommand(string registerId)
     {
         RegisterId = registerId;
     }

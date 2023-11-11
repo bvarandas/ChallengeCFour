@@ -2,8 +2,8 @@
 
 public class CashFlowRemovedEvent : Event
 {
-    public int CashFlowId { get; set; }
-    public CashFlowRemovedEvent(int cashFlowId)
+    public string CashFlowId { get; set; }
+    public CashFlowRemovedEvent(string cashFlowId)
     {
         CashFlowId = cashFlowId;
     }
