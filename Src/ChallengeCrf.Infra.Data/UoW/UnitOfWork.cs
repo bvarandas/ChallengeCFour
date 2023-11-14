@@ -1,15 +1,17 @@
 ﻿using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Infra.Data.Context;
+using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Infra.Data.UoW;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly CashFlowContext _dbContext;
-
-    public UnitOfWork(CashFlowContext dbContext)
+    private readonly ILogger<UnitOfWork> _logger;
+    public UnitOfWork(CashFlowContext dbContext, ILogger<UnitOfWork> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<bool> Commit()
@@ -23,6 +25,7 @@ public class UnitOfWork : IUnitOfWork
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message, ex);
             trySave = false;
         }
         return trySave;

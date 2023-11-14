@@ -20,16 +20,19 @@ public class QueueProducer : BackgroundService, IQueueProducer
         _queueSettings = queueSettings.Value;
         try
         {
-            _factory = new ConnectionFactory { HostName = _queueSettings.HostName };
+            _factory = new ConnectionFactory { HostName = _queueSettings.HostName,  };
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
-
+            _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
+            
             _channel.QueueDeclare(
             queue: _queueSettings.QueueName,
-            durable: false,
+            durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null);
+
+            _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
         }
         catch (Exception ex) 
         {
@@ -44,8 +47,8 @@ public class QueueProducer : BackgroundService, IQueueProducer
             var body = message.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(
-                exchange: string.Empty,
-                routingKey: _queueSettings.QueueName,
+                exchange: _queueSettings.ExchangeService,
+                routingKey: _queueSettings.RoutingKey,
                 basicProperties: null,
                 body: body);
 

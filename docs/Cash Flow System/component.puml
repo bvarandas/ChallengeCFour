@@ -12,7 +12,7 @@ System_Boundary(cfs, "Cash Flow Systen"){
     ComponentDb(db, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
     Component(api, "API Application", "Controller", "Provides internet banking functionality via a JSON/HTTP API.")
     Component(app, "Application", "CommandHandler", "Provides internet banking functionality via a JSON/HTTP API.")
-    Component(cdc, "Daily Consolidated", "Scheduled Background Task", "Provides register of Consolidated Daily Information")   
+    Component(cdc, "Daily Consolidated", "Background Service Task", "Provides register of Consolidated Daily Information")   
     ComponentQueue(rmq, "RabbitMq", "Queue", "Publication Cash Flow/Daily Consolitated")
 
 }

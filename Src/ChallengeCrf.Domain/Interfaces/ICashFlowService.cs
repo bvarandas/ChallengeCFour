@@ -3,7 +3,7 @@ using ChallengeCrf.Domain.Models;
 namespace ChallengeCrf.Domain.Interfaces;
 public interface ICashFlowService
 {
-    Task<IEnumerable<CashFlow>> GetListAllAsync();
+    Task<IAsyncEnumerable<CashFlow>> GetListAllAsync();
     Task<CashFlow> GetCashFlowyIDAsync(string cashFlowId);
     Task<CashFlowCommand> AddCashFlowAsync(CashFlow register);
     Task<CashFlowCommand> UpdateCashFlowAsync(CashFlow register);

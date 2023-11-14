@@ -7,8 +7,8 @@ public abstract class CashFlowValidation<T> : AbstractValidator<T> where T : Cas
 {
     protected void ValidateCashFlowId()
     {
-        RuleFor(c => c.RegisterId)
-            .NotEqual(0);
+        RuleFor(c => c.CashFlowId)
+            .NotEqual("");
     }
 
     protected void ValidateDescription()

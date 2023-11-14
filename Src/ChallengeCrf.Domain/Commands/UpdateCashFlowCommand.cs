@@ -8,9 +8,9 @@ namespace ChallengeCrf.Domain.Commands;
 
 public class UpdateCashFlowCommand : CashFlowCommand
 {
-    public UpdateCashFlowCommand(int registerId, string description, double amount, string entry, DateTime date)
+    public UpdateCashFlowCommand(string cashflowId, string description, double amount, string entry, DateTime date)
     {
-        RegisterId = registerId;
+        CashFlowId = cashflowId;
         Description = description;
         Amount = amount;
         Entry = entry;

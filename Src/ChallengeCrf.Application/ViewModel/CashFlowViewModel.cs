@@ -7,7 +7,7 @@ namespace ChallengeCrf.Application.ViewModel;
 public class CashFlowViewModel
 {
     [Key]
-    public int CashFlowId { get; set; }
+    public string CashFlowId { get; set; }=string.Empty;
 
     [Required(ErrorMessage = "A Descrição é necessária")]
     [MinLength(2)]

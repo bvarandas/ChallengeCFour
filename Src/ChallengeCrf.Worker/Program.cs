@@ -23,6 +23,7 @@ using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using MediatR;
 using MongoFramework;
 using Microsoft.Extensions.DependencyInjection;
+using ChallengeCrf.Domain.Models;
 
 var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -71,20 +72,19 @@ var config = new ConfigurationBuilder()
             services.AddSingleton<IEventStore, SqlEventStore>();
             services.AddSingleton<EventStoreSqlContext>();
 
-            //services.AddHostedService<WorkerProducer>();
-
             services.AddHostedService<WorkerConsumer>();
 
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
-            services.AddTransient<IMongoDbConnection>(( provider) => 
-            {
-                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@mongo:27017/");
-
-                return MongoDbConnection.FromUrl(urlMongo);
-            });
 
             services.Configure<CashFlowSettings>(config.GetSection("CashFlowStoreDatabase"));
 
+            services.AddTransient<IMongoDbConnection>((provider) =>
+            {
+                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@localhost:27017/challengeCrf?authSource=admin");
+                
+                return MongoDbConnection.FromUrl(urlMongo);
+            });
+            
             services.AddAutoMapperSetup();
 
             services.AddMediatR(cfg =>
@@ -92,7 +92,7 @@ var config = new ConfigurationBuilder()
                 cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
             });
             
-            //NativeInjectorBootStrapper.RegisterServices(services);
         })
         .Build();
+
     await host.RunAsync();

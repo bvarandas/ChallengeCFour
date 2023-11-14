@@ -35,7 +35,7 @@ public class CashFlowCommandHandler : CommandHandler,
         }
         var register = new CashFlow(command.Description, command.Amount, command.Entry, command.Date, command.Action);
 
-        await _registerRepository.AddCashFlowAsync(register);
+        _registerRepository.AddCashFlow(register);
 
         if (await Commit())
         {
@@ -52,7 +52,7 @@ public class CashFlowCommandHandler : CommandHandler,
             NotifyValidationErrors(command);
             return await Task.FromResult(false);
         }
-        var register = new CashFlow(command.RegisterId, command.Description, command.Amount,command.Entry, command.Date, command.Action);
+        var register = new CashFlow(command.CashFlowId, command.CashFlowId, command.Description, command.Amount,command.Entry, command.Date, command.Action);
 
         await _registerRepository.UpdateCashFlowAsync(register);
 
@@ -72,11 +72,11 @@ public class CashFlowCommandHandler : CommandHandler,
             return await Task.FromResult(false);
         }
 
-        _registerRepository.DeleteCashFlowAsync(command.RegisterId);
+        _registerRepository.DeleteCashFlowAsync(command.CashFlowId);
 
         if (await Commit())
         {
-            await _bus.RaiseEvent(new CashFlowRemovedEvent(command.RegisterId));
+            await _bus.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
         }
 
         return await Task.FromResult(true);

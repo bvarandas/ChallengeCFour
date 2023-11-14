@@ -25,7 +25,7 @@ public  class CashFlowService : ICashFlowService
         _eventStoreRepository = eventStoreRepository;
         _bus = bus;
     }
-    public async Task<IEnumerable<CashFlow>> GetListAllAsync()
+    public async Task<IAsyncEnumerable<CashFlow>> GetListAllAsync()
     {
         return await _cashFlowRepository.GetAllCashFlowAsync();
     }

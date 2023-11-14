@@ -24,17 +24,29 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
     private readonly IModel _channel;
     private readonly ConcurrentQueue<CashFlow> _queueRegister;
     public WorkerConsumer(IOptions<QueueCommandSettings> queueSettings, 
-        ILogger<WorkerConsumer> logger, ICashFlowService registerService,
+        ILogger<WorkerConsumer> logger, 
+        ICashFlowService registerService,
         IWorkerProducer workerProducer)
     {
         _logger = logger;
         _queueSettings = queueSettings.Value;
+        
+        if (_queueSettings is null)
+        {
+            _logger.LogInformation($"O hostname está nulo");
+        }
+
+        _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
         _factory = new ConnectionFactory()
         {
-            HostName = _queueSettings.HostName
+            HostName = _queueSettings.HostName,
+            Port = _queueSettings.Port,
         };
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
+        _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
+        _channel.QueueDeclare(_queueSettings.QueueName, true, false, false);
+        _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
         _flowService = registerService;
         _workerProducer = workerProducer;
         _queueRegister = new ConcurrentQueue<CashFlow>();
@@ -57,7 +69,7 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         }
     }
 
-    private async void Consumer_Received(object sender, BasicDeliverEventArgs e)
+    private async void Consumer_Received(object? sender, BasicDeliverEventArgs e)
     {
         try
         {
@@ -82,19 +94,22 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
 
                 case "getall":
                     var registerlist = await _flowService.GetListAllAsync();
-                    await WorkerProducer._Singleton.PublishMessages(registerlist.ToList());
+                    await WorkerProducer._Singleton.PublishMessages(registerlist.ToListAsync().Result);
                     break;
 
                 case "get":
                     var register = await _flowService.GetCashFlowyIDAsync(message.CashFlowId);
                     var list = new List<CashFlow>();
-                    list.Add(register);
-                    await WorkerProducer._Singleton.PublishMessages(list);
+                    if (register is not null)
+                    {
+                        list.Add(register);
+                        await WorkerProducer._Singleton.PublishMessages(list);
+                    }
                     break;
 
             }
 
-            _channel.BasicAck(e.DeliveryTag, false);
+            _channel.BasicAck(e.DeliveryTag, true);
 
         }catch (Exception ex) 
         {

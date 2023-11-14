@@ -9,9 +9,9 @@ namespace ChallengeCrf.Domain.Commands;
 
 public class RemoveCashFlowCommand : CashFlowCommand
 {
-    public RemoveCashFlowCommand(string registerId)
+    public RemoveCashFlowCommand(string cashflowId)
     {
-        RegisterId = registerId;
+        CashFlowId = cashflowId;
     }
     public override bool IsValid()
     {

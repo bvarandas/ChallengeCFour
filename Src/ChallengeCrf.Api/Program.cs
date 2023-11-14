@@ -3,6 +3,8 @@ using ChallengeCrf.Api.Configurations;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Api.Producer;
+using Serilog;
+using ProtoBuf.Meta;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -12,6 +14,7 @@ var config = new ConfigurationBuilder()
     .Build();
 
 NativeInjectorBoostrapper.RegisterServices(builder.Services, config);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,7 +27,18 @@ app.UseStatusCodePages(async statusCodeContext
     => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
                  .ExecuteAsync(statusCodeContext.HttpContext));
 
-app.MapPost("cashflow/",  async (CashFlow cash, IQueueProducer queueProducer, ILogger logger) => 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    //.WriteTo.File("logs.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+app.MapGet("/", (ILoggerFactory loggerFactory) => {
+    var logger = loggerFactory.CreateLogger("Start");
+    logger.LogInformation("Starting...");
+    return "Logging at work!";
+});
+
+app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer, ILogger<Program> logger ) => 
 {
     try
     {
@@ -39,11 +53,13 @@ app.MapPost("cashflow/",  async (CashFlow cash, IQueueProducer queueProducer, IL
         return Results.BadRequest(ex);
     }
 });
-app.MapPut("cashflow/", async (CashFlow cash, IQueueProducer queueProducer, ILogger logger) => 
+app.MapPut("api/cashflow/", async (CashFlow cash, IQueueProducer queueProducer, ILogger<Program> logger) => 
 {
     try
     {
         cash.Action = "update";
+        cash.Id = new MongoDB.Bson.ObjectId(cash.CashFlowId);
+
         await queueProducer.PublishMessage(cash);
 
         return Results.Accepted(null, cash);
@@ -55,10 +71,10 @@ app.MapPut("cashflow/", async (CashFlow cash, IQueueProducer queueProducer, ILog
     }
 });
 
-app.MapGet("cashflow/", async (IQueueProducer queueProducer, ILogger logger) => {
+app.MapGet("api/cashflow/", async (IQueueProducer queueProducer, ILogger<Program> logger) => {
     try
     {
-        var cash = new CashFlow() { Action = "getall" };
+        var cash = new CashFlow("",0,"",DateTime.Now, "getall") { Action = "getall" };
         await queueProducer.PublishMessage(cash);
 
         return Results.Ok(null);
@@ -70,10 +86,14 @@ app.MapGet("cashflow/", async (IQueueProducer queueProducer, ILogger logger) => 
     }
 });
 
-app.MapGet("cashflow/{id:string}", async (IQueueProducer queueProducer, ILogger logger, string id) => {
+app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, ILogger<Program> logger) =>
+{
     try
     {
-        var cash = new CashFlow() { Action = "get", CashFlowId = id };
+        var cash = new CashFlow("", 0, "", DateTime.Now, "getall") 
+        { 
+            Action = "get", CashFlowId = id, cashFlowIdTemp= id , Id = new MongoDB.Bson.ObjectId(id) 
+        };
         await queueProducer.PublishMessage(cash);
 
         return Results.Ok(null);
@@ -85,7 +105,9 @@ app.MapGet("cashflow/{id:string}", async (IQueueProducer queueProducer, ILogger 
     }
 });
 
-app.MapDelete("cashflow/{id:string}", (string id) => { });
+app.MapDelete("api/cashflow/{id}", (string id) => { 
+
+});
 
 app.UseCors("CorsPolicy");
 app.MapHub<BrokerHub>("/hubs/brokerhub");

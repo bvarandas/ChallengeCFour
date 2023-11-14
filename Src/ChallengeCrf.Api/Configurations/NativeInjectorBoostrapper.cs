@@ -48,7 +48,9 @@ internal class NativeInjectorBoostrapper
 
         services.AddControllers();
 
-        services.AddSingleton<IQueueConsumer, QueueConsumer>();
+        //services.AddSingleton<IQueueConsumer, QueueConsumer>();
+        services.AddHostedService<QueueConsumer>();
         services.AddHostedService<QueueProducer>();
+        
     }
 }

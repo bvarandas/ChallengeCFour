@@ -9,86 +9,91 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Collections.Generic;
 
-namespace ChallengeCrf.Api.Producer
+namespace ChallengeCrf.Api.Producer;
+
+public class QueueConsumer : BackgroundService, IQueueConsumer
 {
-    public class QueueConsumer :  IQueueConsumer
+    private readonly ILogger<QueueConsumer> _logger;
+    private readonly QueueEventSettings _queueSettings;
+    private readonly ConnectionFactory _factory;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
+    private readonly IServiceProvider _serviceProvider;
+
+    private readonly Dictionary<string, CashFlow> _flows;
+    public QueueConsumer(
+        IOptions<QueueEventSettings> queueSettings, 
+        ILogger<QueueConsumer> logger,
+        IServiceProvider provider)
     {
-        private readonly ILogger<QueueConsumer> _logger;
-        private readonly QueueEventSettings _queueSettings;
-        private readonly ConnectionFactory _factory;
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
-        private readonly IServiceProvider _serviceProvider;
-
-        private readonly Dictionary<string, CashFlow> _flows;
-        public QueueConsumer(
-            IOptions<QueueEventSettings> queueSettings, 
-            ILogger<QueueConsumer> logger,
-            IServiceProvider provider)
+        _logger = logger;
+        _queueSettings = queueSettings.Value;
+        _factory = new ConnectionFactory()
         {
-            _logger = logger;
-            _queueSettings = queueSettings.Value;
-            _factory = new ConnectionFactory()
-            {
-                HostName = _queueSettings.HostName
-            };
-            _connection = _factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _serviceProvider = provider;
-            _flows = new Dictionary<string, CashFlow>();
+            HostName = _queueSettings.HostName
+        };
+        _connection = _factory.CreateConnection();
+        _channel = _connection.CreateModel();
+        _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
+        _channel.QueueDeclare(_queueSettings.QueueName, true, false, false);
+        _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+        _serviceProvider = provider;
+        _flows = new Dictionary<string, CashFlow>();
+    }
+
+    protected override  async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Aguardando mensagens Event...");
+        
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += Consumer_Received;
+        
+        _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
+        
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await Task.Delay(_queueSettings.Interval, stoppingToken);
         }
+    }
 
-        public  async Task ExecuteAsync(CancellationToken stoppingToken)
+    public CashFlow RegisterGetById(string registerId)
+    {
+        return _flows[registerId];
+    }
+
+    
+
+    private void Consumer_Received(object? sender, BasicDeliverEventArgs e)
+    {
+        try
         {
-            _logger.LogInformation("Aguardando mensagens Event...");
-            
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += Consumer_Received;
-            
-            _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
-            
-            while (!stoppingToken.IsCancellationRequested)
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
+
+            using (var scope = _serviceProvider.CreateScope())
             {
-                await Task.Delay(_queueSettings.Interval, stoppingToken);
+                var hubContext = scope.ServiceProvider
+                    .GetRequiredService<IHubContext<BrokerHub>>();
+
+                _flows.Clear();
+
+                messageList.ForEach(mess => {
+                    _flows.TryAdd(mess.CashFlowId, mess);
+                });
+                
+                hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessage", messageList);
             }
-        }
 
-        public CashFlow RegisterGetById(string registerId)
-        {
-            return _flows[registerId];
+            _channel.BasicAck(e.DeliveryTag, false);
         }
-
-        private void Consumer_Received(object sender, BasicDeliverEventArgs e)
+        catch (Exception ex)
         {
-            try
+            _logger.LogError(ex.Message,ex);
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
+            if (messageList is CashFlow)
             {
-                var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
-
-
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var hubContext = scope.ServiceProvider
-                        .GetRequiredService<IHubContext<BrokerHub>>();
-
-                    _flows.Clear();
-                    messageList.ForEach(mess => {
-                        _flows.TryAdd(mess.CashFlowId, mess);
-                    });
-                    
-                    hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessage", messageList);
-                }
-
                 _channel.BasicAck(e.DeliveryTag, false);
-            }
-            catch (Exception ex)
-            {
-                var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
-                if (messageList is CashFlow)
-                {
-                    _channel.BasicAck(e.DeliveryTag, false);
-                }else
-                _channel.BasicNack(e.DeliveryTag, false, true);
-            }
+            }else
+               _channel.BasicNack(e.DeliveryTag, false, true);
         }
     }
 }

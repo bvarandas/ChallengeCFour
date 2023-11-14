@@ -22,7 +22,7 @@ public class EventStoreSQLRepository : IEventStoreRepository
 
     public void Store(StoredEvent theEvent)
     {
-        _context.StoredEvent.Add(theEvent);
-        _context.SaveChanges();
+        //_context.StoredEvent.Add(theEvent);
+        //_context.SaveChanges();
     }
 }

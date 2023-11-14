@@ -31,17 +31,27 @@ public class WorkerProducer :  IWorkerProducer
     {
         _logger = logger;
         _queueSettings = queueSettings.Value;
-        _factory = new ConnectionFactory { HostName = _queueSettings.HostName };
-        _connection = _factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _instance = this;
+        
+        try
+        {
+            _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
+            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=_queueSettings.Port };
+            _connection = _factory.CreateConnection();
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
+            _channel.QueueDeclare(
+            queue: _queueSettings.QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
 
-        _channel.QueueDeclare(
-        queue: _queueSettings.QueueName,
-        durable: false,
-        exclusive: false,
-        autoDelete: false,
-        arguments: null);
+            _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+        }catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        _instance = this;
     }
 
     public Task PublishMessage(CashFlow message)
@@ -72,13 +82,13 @@ public class WorkerProducer :  IWorkerProducer
 
             _channel.QueueDeclare(
             queue: _queueSettings.QueueName,
-            durable: false,
+            durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null);
 
             _channel.BasicPublish(
-                exchange: string.Empty,
+                exchange: _queueSettings.ExchangeService,
                 routingKey: _queueSettings.QueueName,
                 basicProperties: null,
                 body: body);
