@@ -38,10 +38,10 @@ challengecrf.queue - Worker para Producer e consumer para o serviço
 angularcontainer - Front End em angular para efetuar o cadastro. http//localhost:4200/cashflow
 
 Modelo da arquitetura C4
-
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/804e7f43-8faa-4e5b-a05c-b7d806bd8948)
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/538c79d8-4fc7-4132-9e49-6bababe16dda)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/cc18b8c9-637e-42c8-b66e-9b27e04399d9)
+
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/9fa8485e-bf50-42d9-96b2-b745bb1d12df)
 
