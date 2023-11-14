@@ -28,7 +28,7 @@ Event Sourcing (removido)
 Alguns conceitos de solid tbm foram usados.
 
 Instruções para rodar
-Na pasta ChallengeCrf rodar o docker-compose up
+De dentro da pasta do projeto ChallengeCrf rodar o docker-compose up
 
 Irá subir os containers de:
 rabbitmq-server - RabbitMQ
@@ -37,12 +37,13 @@ challengecrf.api - Api de requisições para Controle de lançamentos e consolid
 challengecrf.queue - Worker para Producer e consumer para o serviço 
 angularcontainer - Front End em angular para efetuar o cadastro. http//localhost:4200/cashflow
 
+Modelo da arquitetura C4
 
-Modelo da arquitetura.
-![Arq_ChallengeB3](https://github.com/bvarandas/ChallengeB3/assets/13907905/3f5e852c-e0f7-4f5d-a46d-289813343551)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/804e7f43-8faa-4e5b-a05c-b7d806bd8948)
 
-Dados Cadastrados
-![image](https://github.com/bvarandas/ChallengeB3/assets/13907905/a59d4ac7-1746-4cf3-9f0b-198cc4578028)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/d88ec673-51b6-45b6-a262-0711bf51c258)
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/9fa8485e-bf50-42d9-96b2-b745bb1d12df)
 
 
 
