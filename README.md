@@ -41,7 +41,7 @@ Modelo da arquitetura C4
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/804e7f43-8faa-4e5b-a05c-b7d806bd8948)
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/d88ec673-51b6-45b6-a262-0711bf51c258)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/538c79d8-4fc7-4132-9e49-6bababe16dda)
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/9fa8485e-bf50-42d9-96b2-b745bb1d12df)
 
