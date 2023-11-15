@@ -59,20 +59,20 @@ services:
         networks:
             - challenge 
     
-    # angular-service:
-    #     container_name: angularcontainer
-    #     build: 
-    #         context: .
-    #         dockerfile: Src/ChallengeCrf-Angular/Dockerfile
-    #     restart: on-failure
-    #     volumes: 
-    #         - './angulardockerproject:usr/src/app'
-    #     command: >
-    #         bash -c "npm install && ng serve --host 0.0.0.0 --port 4200"
-    #     ports:
-    #         - 4200:4200
-    #     networks:
-    #         - challenge
+    angular-service:
+         container_name: angularcontainer
+         build: 
+             context: .
+             dockerfile: Src/ChallengeCrf.Angular/Dockerfile
+         restart: on-failure
+         volumes: 
+             - './angulardockerproject:usr/src/app'
+         command: >
+             bash -c "npm install && ng serve --host 0.0.0.0 --port 4200"
+         ports:
+             - 4200:4200
+         networks:
+             - challenge
   
             
 networks:

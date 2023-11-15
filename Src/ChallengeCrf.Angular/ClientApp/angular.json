@@ -132,5 +132,8 @@
       }
     }
   },
-  "defaultProject": "ChallengeCrf.Angular"
+  "defaultProject": "ChallengeCrf.Angular",
+  "cli": {
+    "analytics": false
+  }
 }
