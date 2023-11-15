@@ -36,6 +36,9 @@ services:
     ChallengeCrf.Api:
         image: challengecrf.api
         restart: on-failure
+        depends_on: 
+            - mongo
+            - rabbitmq-server
         build:
             context: .
             dockerfile: Src/ChallengeCrf.Api/Dockerfile
@@ -49,6 +52,9 @@ services:
     ChallengeCrf.Queue:
         image: challengecrf.queue
         restart: on-failure
+        depends_on: 
+            - mongo
+            - rabbitmq-server
         build:
             context: .
             dockerfile: Src/ChallengeCrf.Worker/Dockerfile
@@ -79,4 +85,7 @@ networks:
     challenge:
         driver: bridge
 
-#Nets bridge/none/host
+#Nets bridge/none/hostNone
+# Bridge
+# Overlay
+# Underlay
