@@ -21,14 +21,27 @@ Mediator
 
 Mais
 Ioc - Inversão de controle
+
 CQRS - com Coreografia
+
 Injeção de depedencia
+
 Unit of Work
+
 Event Sourcing (removido)
+
 Alguns conceitos de solid tbm foram usados.
 
+
 Instruções para rodar
-De dentro da pasta do projeto ChallengeCrf rodar o docker-compose up
+
+De dentro da pasta do projeto ChallengeCrf rodar :
+
+kind create cluster
+
+kubectl apply -f .
+
+
 
 Irá subir os containers de:
 rabbitmq-server - RabbitMQ
