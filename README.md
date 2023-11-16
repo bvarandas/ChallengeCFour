@@ -39,7 +39,7 @@ angularcontainer - Front End em angular para efetuar o cadastro. http//localhost
 
 Modelo da arquitetura C4
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/76c11216-d9b7-4d2a-bee2-ec5f4855334b)
+[![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/76c11216-d9b7-4d2a-bee2-ec5f4855334b)]
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/43b306e1-df1d-443a-8199-dbeefc4915e8)
 
