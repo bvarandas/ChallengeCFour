@@ -1,10 +1,12 @@
-﻿using ChallengeCrf.Domain.Bus;
+﻿using Amazon.Runtime.Internal.Util;
+using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Notifications;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Domain.CommandHandlers;
 
@@ -19,7 +21,8 @@ public class CashFlowCommandHandler : CommandHandler,
     public CashFlowCommandHandler(ICashFlowRepository registerRepository,
         IUnitOfWork uow,
         IMediatorHandler bus,
-        INotificationHandler<DomainNotification> notifications) : base(uow, bus, notifications)
+        INotificationHandler<DomainNotification> notifications,
+        ILogger<CashFlowCommandHandler> logger) : base(uow, bus, notifications)
     {
         _registerRepository = registerRepository;
         _bus = bus;

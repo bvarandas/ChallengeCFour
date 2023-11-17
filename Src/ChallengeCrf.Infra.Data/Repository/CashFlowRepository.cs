@@ -4,31 +4,62 @@ using ChallengeCrf.Infra.Data.Context;
 //using Microsoft.EntityFrameworkCore;
 using MongoFramework;
 using Microsoft.EntityFrameworkCore;
+using Amazon.Runtime.Internal.Util;
+using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Infra.Data.Repository;
 public class CashFlowRepository: ICashFlowRepository
 {
+    private readonly ILogger<CashFlowRepository> _logger;
     protected readonly CashFlowContext _dbContext;
-    public CashFlowRepository(CashFlowContext dbContext)
+    public CashFlowRepository(CashFlowContext dbContext, ILogger<CashFlowRepository> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
     public void AddCashFlow(CashFlow register)
     {
-        _dbContext.CashFlow.Add(register);
+        _logger.LogInformation("Inserindo no banco de dados");
+        try
+        {
+            _dbContext.CashFlow
+                .Add(register);
+        }catch (Exception ex) {
+            _logger.LogError(ex.Message);
+        }
     }
     public async Task DeleteCashFlowAsync(string registerId)
     {
-        var filtered = await _dbContext.CashFlow.FirstOrDefaultAsync(x => x.CashFlowId == registerId);
-        _dbContext.CashFlow.Remove(filtered);
+        try
+        {
+            var filtered = await _dbContext
+                .CashFlow
+                .ToAsyncEnumerable()
+                .SingleOrDefaultAsync(x => x.CashFlowId == registerId);
+            _dbContext.CashFlow.Remove(filtered);
+        }catch (Exception ex) {
+            _logger.LogError(ex.Message);
+        }
     }
     public async Task<IAsyncEnumerable<CashFlow>> GetAllCashFlowAsync()
     {
-        var registerList = _dbContext.CashFlow
-            .AsNoTracking()
-            .ToAsyncEnumerable();
+        IAsyncEnumerable<CashFlow>? registerList = null;
+        try
+        {
+            _logger.LogInformation("Coletando  GetAllCashFlowAsync no MongoDB");
+            
+            registerList = _dbContext.CashFlow
+                .AsNoTracking()
+                .ToAsyncEnumerable();
 
+            _logger.LogInformation("Conseguiu Coletar do MongoDB em GetAllCashFlowAsync ");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
         return registerList;
+
     }
     public async Task<CashFlow> GetCashFlowByIDAsync(string registerId)
     {

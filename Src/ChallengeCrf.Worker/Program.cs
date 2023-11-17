@@ -78,9 +78,9 @@ var config = new ConfigurationBuilder()
 
             services.Configure<CashFlowSettings>(config.GetSection("CashFlowStoreDatabase"));
 
-            services.AddTransient<IMongoDbConnection>((provider) =>
+            services.AddSingleton<IMongoDbConnection>((provider) =>
             {
-                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@localhost:27017/challengeCrf?authSource=admin");
+                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@mongo:27017/challengeCrf?authSource=admin");
                 
                 return MongoDbConnection.FromUrl(urlMongo);
             });

@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using Amazon.Runtime.Internal.Util;
+using AutoMapper;
 using ChallengeCrf.Application.EventSourceNormalizes;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
+using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Application.Services;
 
@@ -14,19 +16,23 @@ public  class CashFlowService : ICashFlowService
     private readonly IMediatorHandler _bus;
     private readonly ICashFlowRepository _cashFlowRepository;
     private readonly IEventStoreRepository _eventStoreRepository;
+    private readonly ILogger<CashFlowService> _logger;
     public CashFlowService(
         IMapper mapper, 
         ICashFlowRepository registerRepository, 
         IMediatorHandler bus, 
-        IEventStoreRepository eventStoreRepository)
+        IEventStoreRepository eventStoreRepository,
+        ILogger<CashFlowService> logger)
     {
         _mapper = mapper;
         _cashFlowRepository = registerRepository;
         _eventStoreRepository = eventStoreRepository;
         _bus = bus;
+        _logger = logger;
     }
     public async Task<IAsyncEnumerable<CashFlow>> GetListAllAsync()
     {
+        _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
         return await _cashFlowRepository.GetAllCashFlowAsync();
     }
 
@@ -37,6 +43,7 @@ public  class CashFlowService : ICashFlowService
 
     public async Task<CashFlowCommand> AddCashFlowAsync(CashFlow register)
     {
+        _logger.LogInformation("Tentando inserir no banco de dados");
         var addCommand = _mapper.Map<InsertCashFlowCommand>(register);
         await _bus.SendCommand(addCommand);
 

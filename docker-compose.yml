@@ -5,13 +5,16 @@ services:
     rabbitmq:
         image: rabbitmq:3-management
         container_name: 'rabbitmq-server'
-        #hostname: rmqserver
+        hostname: rabbitmq
         ports:
             - 15672:15672
             - 5672:5672
         volumes:
             - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
             - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+        # environment:
+        #     - RABBITMQ_DEFAULT_USER=admin
+        #     - RABBITMQ_DEFAULT_PASS=admin2017
         networks: 
             - challenge
         healthcheck:
@@ -19,7 +22,6 @@ services:
             interval: 10s
             timeout: 10s
             retries: 2
-        
 
     mongo:
         image: mongo
@@ -32,32 +34,28 @@ services:
         networks:
            - challenge
 
-
-    ChallengeCrf.Api:
-        image: challengecrf.api
+    challengecrf-api:
+        image: bvarandas80/challengecrf-api:v1
         restart: on-failure
+        hostname: challengecrf-api
+        environment:
+            - ASPNETCORE_URLS=http://+:5200;
         depends_on: 
             - mongo
-            - rabbitmq-server
-        build:
-            context: .
-            dockerfile: Src/ChallengeCrf.Api/Dockerfile
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Stage
+            - rabbitmq
+        build: .
         ports:
             - 5200:5200
         networks:
             - challenge
 
-    ChallengeCrf.Queue:
-        image: challengecrf.queue
+    challengecrf-queue:
+        image: bvarandas80/challengecrf-queue:v1
         restart: on-failure
         depends_on: 
             - mongo
-            - rabbitmq-server
-        build:
-            context: .
-            dockerfile: Src/ChallengeCrf.Worker/Dockerfile
+            - rabbitmq
+        build: .
         environment:
             - ASPNETCORE_ENVIRONMENT=Stage
         ports:
@@ -66,20 +64,14 @@ services:
             - challenge 
     
     angular-service:
-         container_name: angularcontainer
-         build: 
-             context: .
-             dockerfile: Src/ChallengeCrf.Angular/Dockerfile
-         restart: on-failure
-         volumes: 
-             - './angulardockerproject:usr/src/app'
-         command: >
-             bash -c "npm install && ng serve --host 0.0.0.0 --port 4200"
-         ports:
-             - 4200:4200
-         networks:
-             - challenge
-  
+        image: bvarandas80/web-angular:v1
+        #container_name: angularcontainer
+        build: .
+        restart: on-failure
+        ports:
+          - 8081:80
+        networks:
+          - challenge
             
 networks:
     challenge:

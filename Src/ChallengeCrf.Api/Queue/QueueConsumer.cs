@@ -30,13 +30,18 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         _queueSettings = queueSettings.Value;
         _factory = new ConnectionFactory()
         {
-            HostName = _queueSettings.HostName
+            HostName = _queueSettings.HostName,
+            Port=5672,
         };
+
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-        _channel.QueueDeclare(_queueSettings.QueueName, true, false, false);
-        _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+
+        _channel.QueueDeclare(_queueSettings.QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
+        
         _serviceProvider = provider;
         _flows = new Dictionary<string, CashFlow>();
     }
@@ -48,7 +53,10 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += Consumer_Received;
         
-        _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
+        _channel.BasicConsume(
+            queue: _queueSettings.QueueName, 
+            autoAck: false, 
+            consumer: consumer);
         
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -60,8 +68,6 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
     {
         return _flows[registerId];
     }
-
-    
 
     private void Consumer_Received(object? sender, BasicDeliverEventArgs e)
     {

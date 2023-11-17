@@ -89,7 +89,7 @@ export class CashflowComponent {
     //this.tituloFormulario = `Atualizar ${resultado.description}`;
 
       this.formulario = new FormGroup({
-        //cashFlowId: new FormControl(resultado.cashFlowId),
+        cashFlowId: new FormControl(cashFlow.cashFlowId),
         description: new FormControl(cashFlow.description),
         entry: new FormControl(cashFlow.entry),
         amount: new FormControl(cashFlow.amount),
@@ -112,6 +112,7 @@ export class CashflowComponent {
     const register: CashFlow = this.formulario.value;
     
     if (register.cashFlowId !== undefined){
+      register.cashFlowIdTemp = register.cashFlowId;
       this.cashflowService.UpdateRegister(register).subscribe((resultado)=>{
         this.visibilidadeTabela = true;
         this.visibilidadeFormulario = false;

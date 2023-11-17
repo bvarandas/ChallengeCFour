@@ -9,6 +9,7 @@
         public string RoutingKey { get; set; } = string.Empty;
         public int Port { get; set; }
         public ushort Interval { get; set; }
+        
     }
 
     public class QueueCommandSettings : QueueSettings { }

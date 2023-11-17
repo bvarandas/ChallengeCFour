@@ -2,6 +2,7 @@ using ChallengeCrf.Api.Hubs;
 using ChallengeCrf.Api.Configurations;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Interfaces;
+using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Api.Producer;
 using Serilog;
 using ProtoBuf.Meta;
@@ -53,12 +54,12 @@ app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer
         return Results.BadRequest(ex);
     }
 });
-app.MapPut("api/cashflow/", async (CashFlow cash, IQueueProducer queueProducer, ILogger<Program> logger) => 
+app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer queueProducer, ILogger<Program> logger) => 
 {
     try
     {
-        cash.Action = "update";
-        cash.Id = new MongoDB.Bson.ObjectId(cash.CashFlowId);
+        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, cashModel.Date, "update");
+        cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
 
         await queueProducer.PublishMessage(cash);
 
@@ -105,8 +106,15 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
     }
 });
 
-app.MapDelete("api/cashflow/{id}", (string id) => { 
-
+app.MapDelete("api/cashflow/{id}", async (IQueueProducer queueProducer, string id) => {
+    var cash = new CashFlow("", 0, "", DateTime.Now, "remove")
+    {
+        Action = "remove",
+        CashFlowId = id,
+        cashFlowIdTemp = id,
+        Id = new MongoDB.Bson.ObjectId(id)
+    };
+    await queueProducer.PublishMessage(cash);
 });
 
 app.UseCors("CorsPolicy");

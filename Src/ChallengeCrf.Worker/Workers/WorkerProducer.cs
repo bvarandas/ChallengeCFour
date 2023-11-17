@@ -38,15 +38,20 @@ public class WorkerProducer :  IWorkerProducer
             _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=_queueSettings.Port };
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-            _channel.QueueDeclare(
-            queue: _queueSettings.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
+            _channel.ExchangeDeclare(
+                exchange: "amq.direct",
+                type: _queueSettings.ExchangeType, 
+                durable: true,
+                autoDelete:false);
 
-            _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            
         }catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
@@ -61,11 +66,10 @@ public class WorkerProducer :  IWorkerProducer
             var body = message.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(
-                exchange: string.Empty,
+                exchange: "",
                 routingKey: _queueSettings.QueueName,
                 basicProperties: null,
                 body: body);
-            
         }
         catch (Exception ex)
         {
@@ -80,15 +84,15 @@ public class WorkerProducer :  IWorkerProducer
         {
             var body = messageList.SerializeToByteArrayProtobuf();
 
-            _channel.QueueDeclare(
-            queue: _queueSettings.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
+            //_channel.QueueDeclare(
+            //queue: _queueSettings.QueueName,
+            //durable: false,
+            //exclusive: false,
+            //autoDelete: false,
+            //arguments: null);
 
             _channel.BasicPublish(
-                exchange: _queueSettings.ExchangeService,
+                exchange: "",
                 routingKey: _queueSettings.QueueName,
                 basicProperties: null,
                 body: body);

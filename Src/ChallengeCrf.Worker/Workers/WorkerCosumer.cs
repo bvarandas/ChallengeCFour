@@ -44,9 +44,12 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         };
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-        _channel.QueueDeclare(_queueSettings.QueueName, true, false, false);
-        _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+        
+        _channel.QueueDeclare(_queueSettings.QueueName,
+            durable: true, 
+            exclusive: false, 
+            autoDelete: false);
+        
         _flowService = registerService;
         _workerProducer = workerProducer;
         _queueRegister = new ConcurrentQueue<CashFlow>();
@@ -73,8 +76,10 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
     {
         try
         {
+            _logger.LogInformation("Chegou nova mensagem no Worker Consumer");
             var message = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
-            _logger.LogInformation($"{message.Description} | {message.Amount}| {message.Entry} | {message.Date}");
+            _logger.LogInformation("Conseguiu Deserializar a mensagem");
+            _logger.LogInformation($"{message.Description} | {message.Amount}| {message.Entry} | {message.Date} | {message.Action}");
 
             _queueRegister.Enqueue(message);
 
@@ -94,7 +99,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
 
                 case "getall":
                     var registerlist = await _flowService.GetListAllAsync();
-                    await WorkerProducer._Singleton.PublishMessages(registerlist.ToListAsync().Result);
+                    if (registerlist is not null)
+                        await WorkerProducer._Singleton.PublishMessages(registerlist.ToListAsync().Result);
                     break;
 
                 case "get":
@@ -114,7 +120,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         }catch (Exception ex) 
         {
             _logger.LogError(ex.Message, ex);
-            _channel.BasicNack(e.DeliveryTag, false, true);
+            //_channel.BasicNack(e.DeliveryTag, false, true);
+            _channel.BasicAck(e.DeliveryTag, true);
         }
     }
 }

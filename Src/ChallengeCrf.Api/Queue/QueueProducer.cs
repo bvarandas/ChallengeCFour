@@ -20,19 +20,24 @@ public class QueueProducer : BackgroundService, IQueueProducer
         _queueSettings = queueSettings.Value;
         try
         {
-            _factory = new ConnectionFactory { HostName = _queueSettings.HostName,  };
+            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=5672  };
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-            
-            _channel.QueueDeclare(
-            queue: _queueSettings.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
 
-            _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+            _channel.ExchangeDeclare(
+                exchange: "amq.direct",
+                type: _queueSettings.ExchangeType, 
+                durable: true,
+                autoDelete: false);
+
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            //_channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
         }
         catch (Exception ex) 
         {
@@ -44,13 +49,17 @@ public class QueueProducer : BackgroundService, IQueueProducer
     {
         try
         {
+            _logger.LogInformation($"QueueProducer - Enviando mensagem nova {message.Description}");
+            
             var body = message.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(
-                exchange: _queueSettings.ExchangeService,
-                routingKey: _queueSettings.RoutingKey,
+                exchange: "",
+                routingKey: _queueSettings.QueueName,
                 basicProperties: null,
                 body: body);
+
+            _logger.LogInformation("QueueProducer - Mensagem enviada");
 
             return Task.CompletedTask;
         }
