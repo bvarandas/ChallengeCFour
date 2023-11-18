@@ -47,6 +47,9 @@ export class CashflowComponent {
       .then(()=> {
         console.log('Hub connection started');
         this.connectToMessageBroker();
+        this.cashflowService.GetAll().subscribe(resultado=>{
+            this.cashflows = resultado;
+          });
       })
       .catch(()=> {
         setTimeout(() => { this.startConnection();}, 5000);
@@ -60,9 +63,9 @@ export class CashflowComponent {
 
   ngOnInit(): void{
 
-    this.cashflowService.GetAll().subscribe(resultado=>{
-      this.cashflows = resultado;
-    });
+    // this.cashflowService.GetAll().subscribe(resultado=>{
+    //   this.cashflows = resultado;
+    // });
   }
 
   

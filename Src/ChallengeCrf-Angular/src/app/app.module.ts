@@ -18,6 +18,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CashflowComponent } from './components/cashflow/cashflow.component';
 import { CashflowService } from './cashflow.service';
+import { CurrencyMaskModule } from "ng2-currency-mask";
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { CashflowService } from './cashflow.service';
     MatDatepickerModule,
     MatSelectModule,
     MatNativeDateModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    CurrencyMaskModule
   ],
   providers: [HttpClientModule, RegistersService, CashflowService],
   bootstrap: [AppComponent]

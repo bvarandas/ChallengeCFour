@@ -1,4 +1,6 @@
-﻿using ProtoBuf;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using ProtoBuf;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,9 +10,9 @@ namespace ChallengeCrf.Domain.Models;
 [ProtoContract]
 public sealed class DailyConsolidated
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [ProtoMember(1)]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId Id { get; set; }
+
     public int DailyConsolidatedId { get; set; }
 
     [ProtoMember(2)]
@@ -21,6 +23,9 @@ public sealed class DailyConsolidated
 
     [ProtoMember(4)]
     public DateTime Date { get; set; }
+
+    [ProtoMember(4)]
+    public double AmoutTotal { get; set; }
 
     public DailyConsolidated()
     {

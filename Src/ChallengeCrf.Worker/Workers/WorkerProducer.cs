@@ -36,8 +36,10 @@ public class WorkerProducer :  IWorkerProducer
         {
             _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
             _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=_queueSettings.Port };
+            
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
+
             _channel.ExchangeDeclare(
                 exchange: "amq.direct",
                 type: _queueSettings.ExchangeType, 
@@ -84,19 +86,11 @@ public class WorkerProducer :  IWorkerProducer
         {
             var body = messageList.SerializeToByteArrayProtobuf();
 
-            //_channel.QueueDeclare(
-            //queue: _queueSettings.QueueName,
-            //durable: false,
-            //exclusive: false,
-            //autoDelete: false,
-            //arguments: null);
-
             _channel.BasicPublish(
                 exchange: "",
                 routingKey: _queueSettings.QueueName,
                 basicProperties: null,
                 body: body);
-
         }
         catch (Exception ex)
         {
@@ -109,7 +103,6 @@ public class WorkerProducer :  IWorkerProducer
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             await Task.Delay(_queueSettings.Interval, stoppingToken);
         }
     }

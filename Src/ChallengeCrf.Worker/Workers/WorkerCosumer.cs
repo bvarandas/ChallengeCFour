@@ -64,10 +64,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
 
         _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
 
-
         while (!stoppingToken.IsCancellationRequested)
         {
-            //DequeueRegisterStatus();
             await Task.Delay(_queueSettings.Interval, stoppingToken);
         }
     }

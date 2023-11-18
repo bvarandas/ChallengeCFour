@@ -69,10 +69,11 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         return _flows[registerId];
     }
 
-    private void Consumer_Received(object? sender, BasicDeliverEventArgs e)
+    private async void Consumer_Received(object? sender, BasicDeliverEventArgs e)
     {
         try
         {
+            _logger.LogInformation("Chegou mensagem nova");
             var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
 
             using (var scope = _serviceProvider.CreateScope())
@@ -86,7 +87,8 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
                     _flows.TryAdd(mess.CashFlowId, mess);
                 });
                 
-                hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessage", messageList);
+                
+                await hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessage", messageList);
             }
 
             _channel.BasicAck(e.DeliveryTag, false);
