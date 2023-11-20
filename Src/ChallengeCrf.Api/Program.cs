@@ -63,7 +63,7 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
     {
         CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now, "update");
         cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
-
+        cash.cashFlowIdTemp = cashModel.CashFlowId;
         await queueProducer.PublishMessage(cash);
 
         return Results.Accepted(null, cash);
@@ -129,8 +129,9 @@ app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProduce
             return Results.BadRequest("Data inválida");
         }
 
-        var cash = new CashFlow("", 0, "", dateFilter, "getall") { Action = "getall" };
-        await queueProducer.PublishMessage(cash);
+        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) { Action = "get" };
+
+        await queueProducer.PublishMessage(dailyConsolidated);
 
         return Results.Ok(null);
     }

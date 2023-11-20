@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DailyConsolidated } from 'src/app/DailyConsolidated';
 import { DailyConsolidatedService } from '../../daily-consolidated.service';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -12,7 +12,7 @@ import { HubConnection } from '@aspnet/signalr';
 export class DailyConsolidatedComponent {
   formulario: any;
   tituloFormulario: string;
-  dailyConsolidated: DailyConsolidated;
+  @Input() dailyConsolidated: DailyConsolidated;
 
   constructor(private dailyConsolidatedService: DailyConsolidatedService)
   {

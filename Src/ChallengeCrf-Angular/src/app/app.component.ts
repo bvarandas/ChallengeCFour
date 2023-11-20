@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { DailyConsolidatedComponent } from './components/daily-consolidated/daily-consolidated.component'
 import { CashflowComponent } from './components/cashflow/cashflow.component';
+import { CashFlow } from './CashFlow';
+import { DailyConsolidated } from './DailyConsolidated';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +13,8 @@ import { CashflowComponent } from './components/cashflow/cashflow.component';
 
 export class AppComponent {
   title = 'ChallengeCrf-Angular';
+  cashFlows: CashFlow[];
+  dailyConsolidated: DailyConsolidated;
   private _hubConnection: HubConnection;
   private _compDC: DailyConsolidatedComponent;
   private _compCF: CashflowComponent;
@@ -19,9 +23,10 @@ export class AppComponent {
     this._compDC = compDC;
     this._compCF = compCF;
     this.CreateConnection();
-    this._compDC.registerOnServerEvents(this._hubConnection);
-    this._compCF.registerOnServerEvents(this._hubConnection);
+    //this._compDC.registerOnServerEvents(this._hubConnection);
+    //this._compCF.registerOnServerEvents(this._hubConnection, this.cashFlows);
     this.startConnection();
+    
   }
   connectToMessageBroker(){
     this._hubConnection.invoke('ConnectToMessageBroker');
@@ -31,6 +36,17 @@ export class AppComponent {
     this._hubConnection = new HubConnectionBuilder()
                               .withUrl("http://localhost:5200/hubs/brokerhub")
                               .build();
+    this._hubConnection.on('ReceiveMessageCF', 
+      (data: CashFlow[])=> 
+      {  
+        this.cashFlows = data; 
+      });
+
+    this._hubConnection.on('ReceiveMessageDC', 
+      (data: DailyConsolidated)=> 
+      { 
+        this.dailyConsolidated = data; 
+      });
   }
 
   private startConnection() : void {

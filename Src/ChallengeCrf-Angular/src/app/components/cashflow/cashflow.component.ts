@@ -1,5 +1,5 @@
 import { CashFlow } from '../../CashFlow';
-import { Component, TemplateRef } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 import { CashflowService } from '../../cashflow.service';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -8,12 +8,14 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 @Component({
   selector: 'app-cashflow',
   templateUrl: './cashflow.component.html',
-  styleUrls: ['./cashflow.component.css']
+  styleUrls: ['./cashflow.component.css'],
+
 })
 export class CashflowComponent {
   formulario: any;
   tituloFormulario: string;
-  cashflows: CashFlow[];
+  @Input() cashflows: CashFlow[];
+  titulo:string;
 
   visibilidadeTabela: boolean =true;
   visibilidadeFormulario: boolean =false;
@@ -26,11 +28,12 @@ export class CashflowComponent {
     }
     
 
-    public registerOnServerEvents(hubConnection:HubConnection) : void {
+    public registerOnServerEvents(hubConnection:HubConnection, listCashFlow:CashFlow[]) : void {
       hubConnection.on('ReceiveMessageCF', 
       (data: CashFlow[])=> 
       {  
-        this.cashflows = data; 
+        //this.cashflows = data; 
+        listCashFlow = data;
       });
     }
 

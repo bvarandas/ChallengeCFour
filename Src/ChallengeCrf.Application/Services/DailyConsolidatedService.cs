@@ -56,11 +56,15 @@ public class DailyConsolidatedService : IDailyConsolidatedService
                 .Where(x => x.Entry == "Credito")
                 .SumAsync(x => x.Amount);
 
-            var dailyConsolidated = new DailyConsolidated("", amountCredit.Result, amountDebit.Result, DateTime.Now, listCashFlow.ToEnumerable());
+            var amountTotal = amountCredit.Result - amountDebit.Result;
+
+            var dailyConsolidated = new DailyConsolidated("", amountCredit.Result, amountDebit.Result, amountTotal, DateTime.Now, listCashFlow.ToEnumerable());
             var hasDailyConsolidated = await _dailyConsolidatedRepository.GetDailyConsolidatedByDateAsync(DateTime.Now);
             
             if (hasDailyConsolidated is not null)
             {
+                dailyConsolidated.Id = hasDailyConsolidated.Id;
+                dailyConsolidated.DailyConsolidatedId = hasDailyConsolidated.Id.ToString();
                 await _dailyConsolidatedRepository.UpdateDailyConsolidatedAsync(dailyConsolidated);
             }else
             {

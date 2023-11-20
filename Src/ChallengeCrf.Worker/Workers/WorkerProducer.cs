@@ -105,7 +105,7 @@ public class WorkerProducer :  IWorkerProducer
         return Task.CompletedTask;
     }
 
-    public Task PublishMessages(List<DailyConsolidated> messageList)
+    public Task PublishMessages(DailyConsolidated messageList)
     {
         try
         {

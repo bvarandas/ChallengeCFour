@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChallengeCrf.Domain.Models;
 
-[Table("tb_DailyConsolidated")]
 [ProtoContract]
 public sealed class DailyConsolidated
 {
@@ -25,7 +24,7 @@ public sealed class DailyConsolidated
     public DateTime Date { get; set; }
 
     [ProtoMember(5)]
-    public double AmoutTotal { get; set; }
+    public double AmountTotal { get; set; }
 
     [ProtoMember(6)]
     public IEnumerable<CashFlow> CashFlows { get; set; }
@@ -37,12 +36,13 @@ public sealed class DailyConsolidated
     {
     }
 
-    public DailyConsolidated(string dailyConsolidatedId, double amountCredit, double amountDebit, DateTime date, IEnumerable<CashFlow> cashFlows)
+    public DailyConsolidated(string dailyConsolidatedId, double amountCredit, double amountDebit,double amountTotal,  DateTime date, IEnumerable<CashFlow> cashFlows)
     {
         DailyConsolidatedId = dailyConsolidatedId;
         AmountCredit = amountCredit;
         AmountDebit = amountDebit;
         Date = date;
+        AmountTotal = amountTotal;
         CashFlows = cashFlows;
     }
 }

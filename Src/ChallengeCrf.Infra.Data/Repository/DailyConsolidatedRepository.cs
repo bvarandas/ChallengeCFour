@@ -52,30 +52,31 @@ public class DailyConsolidatedRepository : IDailyConsolidatedRepository
 
     public async Task<DailyConsolidated> UpdateDailyConsolidatedAsync(DailyConsolidated dailyConsolidated)
     {
-        //var local = _dbContext.CashFlow.
-        //    AsNoTracking().
-        //    FirstOrDefault(entry =>
-        //        entry
-        //    .DailyConsolidated
-        //        .Equals(dailyConsolidated.DailyConsolidatedId));
-
-        _dbContext.DailyConsolidated.Update(dailyConsolidated);
+        try
+        {
+            _dbContext.DailyConsolidated.Update(dailyConsolidated);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError($"{ex.Message}");
+        }
 
         return await Task.FromResult(dailyConsolidated);
     }
 
 
-    public Task AddDailyConsolidatedAsync(DailyConsolidated dailyConsolidated)
+    public async Task AddDailyConsolidatedAsync(DailyConsolidated dailyConsolidated)
     {
         _logger.LogInformation("Inserindo no banco de dados");
         try
         {
             _dbContext.DailyConsolidated.Add(dailyConsolidated);
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
         }
-        return Task.CompletedTask;
     }
 }

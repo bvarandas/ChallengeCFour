@@ -4,5 +4,6 @@ export class DailyConsolidated{
     cashFlows: CashFlow[];
     amountDebit: number;
     amountCredit: number;
+    amountTotal: number;
     date: Date;
 }

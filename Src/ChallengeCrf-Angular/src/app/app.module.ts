@@ -23,7 +23,9 @@ import { DailyConsolidatedComponent } from './components/daily-consolidated/dail
 import { DailyConsolidatedService } from './daily-consolidated.service';
 import { MatTabsModule } from '@angular/material/tabs'
 
+
 @NgModule({
+  
   declarations: [
     AppComponent,
     RegistersComponent,

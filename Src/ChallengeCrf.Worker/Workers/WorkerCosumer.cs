@@ -92,8 +92,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
                     var list = new List<DailyConsolidated>();
                     if (dailyConsolidated is not null)
                     {
-                        list.Add(dailyConsolidated);
-                        await WorkerProducer._Singleton.PublishMessages(list);
+                        //list.Add(dailyConsolidated);
+                        await WorkerProducer._Singleton.PublishMessages(dailyConsolidated);
                     }
                 break;
             }
