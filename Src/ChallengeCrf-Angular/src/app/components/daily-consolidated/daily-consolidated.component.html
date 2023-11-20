@@ -1,0 +1,16 @@
+<div class="container p-5" >
+    <table class="table tabe-striped table-hover table-sm" *ngIf="dailyConsolidated">
+        <tr class="thead-light">
+            <th>Description</th>
+            <th>Credito</th>
+            <th>Debito</th>
+            <th>Date</th>
+        </tr>
+        <tr *ngFor="let cashflow of dailyConsolidated.cashFlows">
+            <td>{{cashflow.description}}</td>
+            <td *ng-if="cashflow.entry==='Credito'">{{cashflow.amount}}</td>
+            <td *ng-if="cashflow.entry==='Debito'">{{cashflow.amount}}</td>
+            <td>{{cashflow.date}}</td>
+        </tr>
+    </table>
+</div>

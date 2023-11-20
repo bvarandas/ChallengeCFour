@@ -3,6 +3,7 @@ using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.Data.Context;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 
 namespace ChallengeCrf.Infra.Data.Repository;
 
@@ -17,20 +18,7 @@ public class DailyConsolidatedRepository : IDailyConsolidatedRepository
         _logger = logger;
     }
 
-    public void AddCashFlow(DailyConsolidated register)
-    {
-        _logger.LogInformation("Inserindo no banco de dados");
-        try
-        {
-            _dbContext.DailyConsolidated.Add(register);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-        }
-    }
-
-    public async Task<IAsyncEnumerable<DailyConsolidated>> GetAllDailyConsolidatedAsync()
+    public async Task<IAsyncEnumerable<DailyConsolidated>> GetDailyConsolidatedListAllAsync()
     {
         IAsyncEnumerable<DailyConsolidated>? registerList = null;
         try
@@ -62,4 +50,32 @@ public class DailyConsolidatedRepository : IDailyConsolidatedRepository
         return registerResult;
     }
 
+    public async Task<DailyConsolidated> UpdateDailyConsolidatedAsync(DailyConsolidated dailyConsolidated)
+    {
+        //var local = _dbContext.CashFlow.
+        //    AsNoTracking().
+        //    FirstOrDefault(entry =>
+        //        entry
+        //    .DailyConsolidated
+        //        .Equals(dailyConsolidated.DailyConsolidatedId));
+
+        _dbContext.DailyConsolidated.Update(dailyConsolidated);
+
+        return await Task.FromResult(dailyConsolidated);
+    }
+
+
+    public Task AddDailyConsolidatedAsync(DailyConsolidated dailyConsolidated)
+    {
+        _logger.LogInformation("Inserindo no banco de dados");
+        try
+        {
+            _dbContext.DailyConsolidated.Add(dailyConsolidated);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+        return Task.CompletedTask;
+    }
 }

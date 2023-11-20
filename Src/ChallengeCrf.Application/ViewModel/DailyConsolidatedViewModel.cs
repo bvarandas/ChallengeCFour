@@ -9,4 +9,6 @@ public class DailyConsolidatedViewModel
     public double AmountDebit { get; set; }
     public DateTime Date { get; set; }
     public double AmoutTotal { get; set; }
+
+    public IEnumerable<CashFlowViewModel> CashFlows { get; set; }
 }

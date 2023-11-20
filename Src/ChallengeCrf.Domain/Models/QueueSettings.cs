@@ -3,7 +3,8 @@
     public abstract class QueueSettings
     {
         public string HostName { get; set; } = string.Empty;
-        public string QueueName { get; set; } = string.Empty;
+        public string QueueNameCashFlow { get; set; } = string.Empty;
+        public string QueueNameDailyConsolidated { get; set; } = string.Empty;
         public string ExchangeService {  get; set; } = string.Empty;
         public string ExchangeType {  get; set; } = string.Empty;
         public string RoutingKey { get; set; } = string.Empty;

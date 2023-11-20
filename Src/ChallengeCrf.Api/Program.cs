@@ -6,6 +6,8 @@ using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Api.Producer;
 using Serilog;
 using ProtoBuf.Meta;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -44,6 +46,7 @@ app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer
     try
     {
         cash.Action = "insert";
+        cash.Date = DateTime.Now;
         await queueProducer.PublishMessage(cash);
 
         return Results.Accepted(null,cash);
@@ -58,7 +61,7 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
 {
     try
     {
-        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, cashModel.Date, "update");
+        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now, "update");
         cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
 
         await queueProducer.PublishMessage(cash);
@@ -115,6 +118,27 @@ app.MapDelete("api/cashflow/{id}", async (IQueueProducer queueProducer, string i
         Id = new MongoDB.Bson.ObjectId(id)
     };
     await queueProducer.PublishMessage(cash);
+});
+
+app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProducer queueProducer, ILogger<Program> logger) => 
+{
+    try
+    {
+        if (!DateTime.TryParse(date, out DateTime dateFilter))
+        {
+            return Results.BadRequest("Data inválida");
+        }
+
+        var cash = new CashFlow("", 0, "", dateFilter, "getall") { Action = "getall" };
+        await queueProducer.PublishMessage(cash);
+
+        return Results.Ok(null);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, $"{ex.Message}");
+        return Results.BadRequest(ex);
+    }
 });
 
 app.UseCors("CorsPolicy");

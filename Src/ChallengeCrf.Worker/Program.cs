@@ -24,6 +24,7 @@ using MediatR;
 using MongoFramework;
 using Microsoft.Extensions.DependencyInjection;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Queue.Worker.Workers;
 
 var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -48,6 +49,7 @@ var config = new ConfigurationBuilder()
 
             // Application
             services.AddSingleton<ICashFlowService, CashFlowService>();
+            services.AddSingleton<IDailyConsolidatedService, DailyConsolidatedService>();
 
             // Domain - Events
             services.AddSingleton<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
@@ -63,6 +65,7 @@ var config = new ConfigurationBuilder()
 
             // Infra - Data
             services.AddSingleton<ICashFlowRepository, CashFlowRepository>();
+            services.AddSingleton<IDailyConsolidatedRepository, DailyConsolidatedRepository>();
 
             services.AddSingleton<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<CashFlowContext>();
@@ -73,6 +76,7 @@ var config = new ConfigurationBuilder()
             services.AddSingleton<EventStoreSqlContext>();
 
             services.AddHostedService<WorkerConsumer>();
+            services.AddHostedService<WorkerDailyConsolidated>();
 
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
 

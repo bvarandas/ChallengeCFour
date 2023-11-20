@@ -13,7 +13,7 @@ public sealed class DailyConsolidated
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId Id { get; set; }
 
-    public int DailyConsolidatedId { get; set; }
+    public string DailyConsolidatedId { get; set; }
 
     [ProtoMember(2)]
     public double AmountCredit { get; set; }
@@ -24,18 +24,25 @@ public sealed class DailyConsolidated
     [ProtoMember(4)]
     public DateTime Date { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(5)]
     public double AmoutTotal { get; set; }
+
+    [ProtoMember(6)]
+    public IEnumerable<CashFlow> CashFlows { get; set; }
+
+    [ProtoMember(7)]
+    public string Action { get; set; }
 
     public DailyConsolidated()
     {
     }
 
-    public DailyConsolidated(int dailyConsolidatedId, double amountCredit, double amountDebit, DateTime date)
+    public DailyConsolidated(string dailyConsolidatedId, double amountCredit, double amountDebit, DateTime date, IEnumerable<CashFlow> cashFlows)
     {
         DailyConsolidatedId = dailyConsolidatedId;
         AmountCredit = amountCredit;
         AmountDebit = amountDebit;
         Date = date;
+        CashFlows = cashFlows;
     }
 }

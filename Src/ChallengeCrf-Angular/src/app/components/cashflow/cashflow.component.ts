@@ -21,54 +21,31 @@ export class CashflowComponent {
   cashFlowId: string;
   modalRef : BsModalRef;
 
-  private _hubConnection: HubConnection;
-
-  constructor(private cashflowService: CashflowService,
+    constructor(private cashflowService: CashflowService,
     private modalService: BsModalService){
-      this.CreateConnection();
-      this.registerOnServerEvents();
-      this.startConnection();
-
     }
+    
 
-    connectToMessageBroker(){
-      this._hubConnection.invoke('ConnectToMessageBroker');
-    }
-
-    private CreateConnection(){
-      this._hubConnection = new HubConnectionBuilder()
-                                .withUrl("http://localhost:5200/hubs/brokerhub")
-                                .build();
-    }
-
-    private startConnection() : void {
-      this._hubConnection
-      .start()
-      .then(()=> {
-        console.log('Hub connection started');
-        this.connectToMessageBroker();
-        this.cashflowService.GetAll().subscribe(resultado=>{
-            this.cashflows = resultado;
-          });
-      })
-      .catch(()=> {
-        setTimeout(() => { this.startConnection();}, 5000);
+    public registerOnServerEvents(hubConnection:HubConnection) : void {
+      hubConnection.on('ReceiveMessageCF', 
+      (data: CashFlow[])=> 
+      {  
+        this.cashflows = data; 
       });
     }
 
-    private registerOnServerEvents() : void {
-      this._hubConnection.on('ReceiveMessage', 
-      (data: CashFlow[])=> { this.cashflows = data; });
+    public GetInitial() : void{
+      this.cashflowService.GetAll().subscribe(resultado=>{
+      //this.cashflows = resultado;
+    });
     }
 
   ngOnInit(): void{
-
     // this.cashflowService.GetAll().subscribe(resultado=>{
     //   this.cashflows = resultado;
     // });
   }
-
-  
+ 
 
   // ExibirFormularioAtualizacao(cashFlowId: string) : void  {
   //   this.visibilidadeTabela = false;
@@ -113,7 +90,8 @@ export class CashflowComponent {
 
   EnviarFormulario(): void{
     const register: CashFlow = this.formulario.value;
-    
+    register.date = new Date();
+
     if (register.cashFlowId !== undefined){
       register.cashFlowIdTemp = register.cashFlowId;
       this.cashflowService.UpdateRegister(register).subscribe((resultado)=>{

@@ -61,16 +61,27 @@ public class CashFlowRepository: ICashFlowRepository
         return registerList;
 
     }
-    public async Task<CashFlow> GetCashFlowByIDAsync(string registerId)
+    public async Task<CashFlow> GetCashFlowByIDAsync(string cashFlowId)
     {
         var registerResult = await _dbContext
             .CashFlow
             .ToAsyncEnumerable()
-            .SingleOrDefaultAsync(x => x.CashFlowId == registerId);
-            //.SingleOrDefaultAsync(x => x.CashFlowId == registerId);
+            .SingleOrDefaultAsync(x => x.CashFlowId == cashFlowId);
             
         return registerResult;
     }
+
+    public async Task<IAsyncEnumerable<CashFlow>> GetCashFlowByDateAsync(DateTime date)
+    {
+        var registerResult = _dbContext
+            .CashFlow
+            .AsNoTracking()
+            .ToAsyncEnumerable()
+            .Where(x => x.Date.ToString("dd/MM/yyyy") == date.ToString("dd/MM/yyyy"));
+        
+        return registerResult;
+    }
+
     public async Task<CashFlow> UpdateCashFlowAsync(CashFlow register)
     {
         var local = _dbContext.CashFlow.

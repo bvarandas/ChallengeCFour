@@ -31,13 +31,20 @@ public class QueueProducer : BackgroundService, IQueueProducer
                 autoDelete: false);
 
             _channel.QueueDeclare(
-                queue: _queueSettings.QueueName,
+                queue: _queueSettings.QueueNameCashFlow,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
 
-            //_channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueNameDailyConsolidated,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            
         }
         catch (Exception ex) 
         {
@@ -55,11 +62,36 @@ public class QueueProducer : BackgroundService, IQueueProducer
 
             _channel.BasicPublish(
                 exchange: "",
-                routingKey: _queueSettings.QueueName,
+                routingKey: _queueSettings.QueueNameCashFlow,
                 basicProperties: null,
                 body: body);
 
             _logger.LogInformation("QueueProducer - Mensagem enviada");
+
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"{ex.Message}");
+            return Task.FromException(ex);
+        }
+    }
+
+    public Task PublishMessage(DailyConsolidated message)
+    {
+        try
+        {
+            _logger.LogInformation($"QueueProducer - Enviando mensagem nova de DailyConsolidated");
+
+            var body = message.SerializeToByteArrayProtobuf();
+
+            _channel.BasicPublish(
+                exchange: "",
+                routingKey: _queueSettings.QueueNameDailyConsolidated,
+                basicProperties: null,
+                body: body);
+
+            _logger.LogInformation("QueueProducer - Mensagem enviada de DailyConsolidated");
 
             return Task.CompletedTask;
         }

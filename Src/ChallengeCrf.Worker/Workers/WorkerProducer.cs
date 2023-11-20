@@ -47,29 +47,54 @@ public class WorkerProducer :  IWorkerProducer
                 autoDelete:false);
 
             _channel.QueueDeclare(
-                queue: _queueSettings.QueueName,
+                queue: _queueSettings.QueueNameCashFlow,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
 
-            
-        }catch (Exception ex)
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueNameDailyConsolidated,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
         }
         _instance = this;
     }
 
-    public Task PublishMessage(CashFlow message)
+    //public Task PublishMessage(CashFlow message)
+    //{
+    //    try
+    //    {
+    //        var body = message.SerializeToByteArrayProtobuf();
+
+    //        _channel.BasicPublish(
+    //            exchange: "",
+    //            routingKey: _queueSettings.QueueNameCashFlow,
+    //            basicProperties: null,
+    //            body: body);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, $"{ex.Message}");
+    //    }
+    //    return Task.CompletedTask;
+    //}
+
+    public Task PublishMessages(List<CashFlow> messageList)
     {
         try
         {
-            var body = message.SerializeToByteArrayProtobuf();
+            var body = messageList.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(
                 exchange: "",
-                routingKey: _queueSettings.QueueName,
+                routingKey: _queueSettings.QueueNameCashFlow,
                 basicProperties: null,
                 body: body);
         }
@@ -80,7 +105,7 @@ public class WorkerProducer :  IWorkerProducer
         return Task.CompletedTask;
     }
 
-    public Task PublishMessages(List<CashFlow> messageList)
+    public Task PublishMessages(List<DailyConsolidated> messageList)
     {
         try
         {
@@ -88,7 +113,7 @@ public class WorkerProducer :  IWorkerProducer
 
             _channel.BasicPublish(
                 exchange: "",
-                routingKey: _queueSettings.QueueName,
+                routingKey: _queueSettings.QueueNameDailyConsolidated,
                 basicProperties: null,
                 body: body);
         }

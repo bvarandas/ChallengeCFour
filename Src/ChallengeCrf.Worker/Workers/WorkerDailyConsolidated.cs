@@ -1,29 +1,26 @@
-﻿]using ChallengeCrf.Domain.Interfaces;
-using ChallengeCrf.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using ChallengeCrf.Domain.Interfaces;
 namespace ChallengeCrf.Queue.Worker.Workers;
 
 public class WorkerDailyConsolidated : BackgroundService
 {
-    private readonly IDailyConsolidatedService _dcService;
+    private readonly IDailyConsolidatedService _dailyConsolidatedService;
     private readonly ILogger<WorkerDailyConsolidated> _logger;
 
-    public WorkerDailyConsolidated(ILogger<WorkerDailyConsolidated> logger, IDailyConsolidatedService dcService)
+    public WorkerDailyConsolidated(
+        ILogger<WorkerDailyConsolidated> logger, 
+        IDailyConsolidatedService dailyConsolidatedService)
     {
-        _dcService = dcService;
+        _dailyConsolidatedService = dailyConsolidatedService;
         _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(5000, stoppingToken);
+            await _dailyConsolidatedService.GenerateReportDailyConsolidated(stoppingToken);
+            await Task.Delay( 60000 * 5, stoppingToken);
         }
     }
 }
