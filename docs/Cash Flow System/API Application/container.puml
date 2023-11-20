@@ -4,29 +4,23 @@
 !define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
 !includeurl ICONURL/devicons/go.puml
 
-Container(spa, "Single Page Application", "javascript and react", "Provides all the internet banking functionality to customers via their web browser.")
-ContainerDb(db, "Database", "Relational Database Schema", "Stores Cash Flow and Daily Consolidated", $sprite="go")
+Container(spa, "Single Page Application", "javascript and react", "Provides all functionality to merchants do debit/credit cash flow via their web browser.")
+ContainerDb(db, "Database", "MongoDB", "Stores Cash Flow and Daily Consolidated", $sprite="go")
 
 Container_Boundary(api, "API Application") {
     Component(cf, "Cash Flow Controller", "Rest Controller", "Provides register and view information about debit/credit entries")
-    Component(cd, "Daily Consolidated Controller", "Rest Controller", "Provides view information about debit/credit entries")
-    Component(cdc, "Daily Consolidated", "Scheduled Background Task", "Provides register of Consolidated Daily Information")   
+
+    
 }
 
-Container_Boundary(app, "Application") {
+Container_Boundary(app, "Application/Services") {
     ContainerQueue(rmq, "RabbitMQ", "Queue","Publication Cash Flow/Daily Consolitated")
 }
 
 
 Rel(spa, cf, "Uses", "JSON/HTTP")
-Rel(spa, cd, "Uses", "JSON/HTTP")
-
-Rel(cd, db, "Read to", "EF")
 Rel(cf, db, "Read to", "EF")
-
-Rel(cdc, rmq, "Send to", "Protobuff")
 Rel(cf, rmq, "Send to", "Protobuff")
-
 Rel(rmq, db, "Write to", "EF")
 
 LAYOUT_WITH_LEGEND()

@@ -36,36 +36,67 @@ public class WorkerProducer :  IWorkerProducer
         {
             _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
             _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=_queueSettings.Port };
+            
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-            _channel.QueueDeclare(
-            queue: _queueSettings.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
 
-            _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
-        }catch (Exception ex)
+            _channel.ExchangeDeclare(
+                exchange: "amq.direct",
+                type: _queueSettings.ExchangeType, 
+                durable: true,
+                autoDelete:false);
+
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueNameCashFlow,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            _channel.QueueDeclare(
+                queue: _queueSettings.QueueNameDailyConsolidated,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
         }
         _instance = this;
     }
 
-    public Task PublishMessage(CashFlow message)
+    //public Task PublishMessage(CashFlow message)
+    //{
+    //    try
+    //    {
+    //        var body = message.SerializeToByteArrayProtobuf();
+
+    //        _channel.BasicPublish(
+    //            exchange: "",
+    //            routingKey: _queueSettings.QueueNameCashFlow,
+    //            basicProperties: null,
+    //            body: body);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, $"{ex.Message}");
+    //    }
+    //    return Task.CompletedTask;
+    //}
+
+    public Task PublishMessages(List<CashFlow> messageList)
     {
         try
         {
-            var body = message.SerializeToByteArrayProtobuf();
+            var body = messageList.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(
-                exchange: string.Empty,
-                routingKey: _queueSettings.QueueName,
+                exchange: "",
+                routingKey: _queueSettings.QueueNameCashFlow,
                 basicProperties: null,
                 body: body);
-            
         }
         catch (Exception ex)
         {
@@ -74,25 +105,17 @@ public class WorkerProducer :  IWorkerProducer
         return Task.CompletedTask;
     }
 
-    public Task PublishMessages(List<CashFlow> messageList)
+    public Task PublishMessages(DailyConsolidated messageList)
     {
         try
         {
             var body = messageList.SerializeToByteArrayProtobuf();
 
-            _channel.QueueDeclare(
-            queue: _queueSettings.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
-
             _channel.BasicPublish(
-                exchange: _queueSettings.ExchangeService,
-                routingKey: _queueSettings.QueueName,
+                exchange: "",
+                routingKey: _queueSettings.QueueNameDailyConsolidated,
                 basicProperties: null,
                 body: body);
-
         }
         catch (Exception ex)
         {
@@ -105,7 +128,6 @@ public class WorkerProducer :  IWorkerProducer
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             await Task.Delay(_queueSettings.Interval, stoppingToken);
         }
     }

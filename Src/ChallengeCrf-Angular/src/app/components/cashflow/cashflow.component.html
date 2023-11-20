@@ -1,8 +1,9 @@
-<div class="container p-5" *ngIf="visibilidadeTabela">
-    <div class="border boder-light rounded p-5" >
+<div  class="container p-5" *ngIf="visibilidadeTabela">
+    
+    <div class="border boder-light rounded p-5"  >
         <div>
             <button type="button" class="btn btn-sm btn-secondary"(click)="ExibirFormularioCadastro()" >
-                Novo Lançamento
+                Novo Lançamento {{titulo}}
             </button>
         </div>
         <hr/>
@@ -17,8 +18,8 @@
             <tr *ngFor="let cashflow of cashflows">
                 <td>{{cashflow.description}}</td>
                 <td>{{cashflow.entry}}</td>
-                <td>{{cashflow.amount}}</td>
-                <td>{{cashflow.date}}</td>
+                <td>{{cashflow.amount | number: '1.2-3'}}</td>
+                <td>{{cashflow.date | date:'dd/MM/yyyy'}}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-outline-info" (click)="ExibirFormularioAtualizacao(cashflow)" >Atualizar</button> |
                     <button type="button" class="btn btn-sm btn-outline-danger" (click)="ExibirConfirmacaoExclusao(cashflow.cashFlowId, cashflow.description, conteudoModal)">Excluir</button>
@@ -42,36 +43,28 @@
                 </div>
 
                 <div class="form-group">
-                    <!-- <h4>Basic native select</h4> -->
                     <label>Lançamento</label>
-                    <mat-form-field appearance="fill">
-                    <!-- <mat-label>Cars</mat-label> -->
-                    <select matNativeControl required formControlName="entry">
+                    <mat-form-field  class="form-control form-control-sm">
+                    <select matNativeControl required formControlName="entry" class="form-control form-control-sm">
                         <option value="Debito">Debito</option>
                         <option value="Credito">Credito</option>
-                        
                     </select>
                     </mat-form-field>
-                    <!-- <label>Status</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="status" />  -->
                 </div>
 
                 <div class="form-group">
                     <label>Valor</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="amount" /> 
+                    <input currencyMask  [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" type="text"  class="form-control form-control-sm" formControlName="amount" /> 
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label>Date</label>
-                    <input matInput [matDatepicker]="picker" formControlName="date" name="date">
-                    <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+                    <input matInput [matDatepicker]="picker" class="form-control"  formControlName="date" name="date">
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
-                    <!-- <label>Date</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="date" />  -->
-                </div>
+                </div> -->
                 
-                <div class="container">
-                    <div class="d-flex">
+                <div class="container" >
+                    <div class="d-flex" style="text-align: right ;" >
                         <div class="class="d-inline-block>
                             <button type="submit" class="btn btn-sm btn-outline-secondary">Salvar</button>
                         </div>

@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using Amazon.Runtime.Internal.Util;
+using AutoFixture;
 using AutoMapper;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Bus;
@@ -7,6 +8,7 @@ using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -19,10 +21,11 @@ public class CashFlowServiceTests
     public CashFlowServiceTests()
     {
         cashFlowService = new CashFlowService(
-            new Mock<IMapper>().Object, 
+            new Mock<IMapper>().Object,
             new Mock<ICashFlowRepository>().Object,
             new Mock<IMediatorHandler>().Object,
-            new Mock<IEventStoreRepository>().Object);
+            new Mock<IEventStoreRepository>().Object,
+            new Mock<ILogger<CashFlowService>>().Object);
 
     }
 

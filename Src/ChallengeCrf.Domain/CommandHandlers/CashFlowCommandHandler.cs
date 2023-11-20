@@ -1,10 +1,12 @@
-﻿using ChallengeCrf.Domain.Bus;
+﻿using Amazon.Runtime.Internal.Util;
+using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Notifications;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Domain.CommandHandlers;
 
@@ -14,16 +16,17 @@ public class CashFlowCommandHandler : CommandHandler,
     IRequestHandler<RemoveCashFlowCommand, bool>
 {
     private readonly ICashFlowRepository _registerRepository;
-    private readonly IMediatorHandler _bus;
+    private readonly IMediatorHandler _mediator;
 
-    public CashFlowCommandHandler(ICashFlowRepository registerRepository,
+    public CashFlowCommandHandler(
+        ICashFlowRepository registerRepository,
         IUnitOfWork uow,
-        IMediatorHandler bus,
-        INotificationHandler<DomainNotification> notifications) : base(uow, bus, notifications)
+        IMediatorHandler mediator,
+        INotificationHandler<DomainNotification> notifications,
+        ILogger<CashFlowCommandHandler> logger) : base(uow, mediator, notifications)
     {
         _registerRepository = registerRepository;
-        _bus = bus;
-        
+        _mediator = mediator;
     }
 
     public async Task<bool> Handle(InsertCashFlowCommand command, CancellationToken cancellationToken)
@@ -39,7 +42,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         if (await Commit())
         {
-            await _bus.RaiseEvent(new CashFlowInsertedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date , register.Action));
+            await _mediator.RaiseEvent(new CashFlowInsertedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date , register.Action));
         }
 
         return await Task.FromResult(true);
@@ -58,7 +61,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         if (await Commit())
         {
-            await _bus.RaiseEvent(new CashFlowUpdatedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date));
+            await _mediator.RaiseEvent(new CashFlowUpdatedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date));
         }
 
         return await Task.FromResult(true);
@@ -76,7 +79,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         if (await Commit())
         {
-            await _bus.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
+            await _mediator.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
         }
 
         return await Task.FromResult(true);

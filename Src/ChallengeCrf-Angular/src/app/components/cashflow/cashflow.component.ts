@@ -1,5 +1,5 @@
 import { CashFlow } from '../../CashFlow';
-import { Component, TemplateRef } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 import { CashflowService } from '../../cashflow.service';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -8,12 +8,14 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 @Component({
   selector: 'app-cashflow',
   templateUrl: './cashflow.component.html',
-  styleUrls: ['./cashflow.component.css']
+  styleUrls: ['./cashflow.component.css'],
+
 })
 export class CashflowComponent {
   formulario: any;
   tituloFormulario: string;
-  cashflows: CashFlow[];
+  @Input() cashflows: CashFlow[];
+  titulo:string;
 
   visibilidadeTabela: boolean =true;
   visibilidadeFormulario: boolean =false;
@@ -21,51 +23,32 @@ export class CashflowComponent {
   cashFlowId: string;
   modalRef : BsModalRef;
 
-  private _hubConnection: HubConnection;
-
-  constructor(private cashflowService: CashflowService,
+    constructor(private cashflowService: CashflowService,
     private modalService: BsModalService){
-      this.CreateConnection();
-      this.registerOnServerEvents();
-      this.startConnection();
-
     }
+    
 
-    connectToMessageBroker(){
-      this._hubConnection.invoke('ConnectToMessageBroker');
-    }
-
-    private CreateConnection(){
-      this._hubConnection = new HubConnectionBuilder()
-                                .withUrl("http://localhost:5200/hubs/brokerhub")
-                                .build();
-    }
-
-    private startConnection() : void {
-      this._hubConnection
-      .start()
-      .then(()=> {
-        console.log('Hub connection started');
-        this.connectToMessageBroker();
-      })
-      .catch(()=> {
-        setTimeout(() => { this.startConnection();}, 5000);
+    public registerOnServerEvents(hubConnection:HubConnection, listCashFlow:CashFlow[]) : void {
+      hubConnection.on('ReceiveMessageCF', 
+      (data: CashFlow[])=> 
+      {  
+        //this.cashflows = data; 
+        listCashFlow = data;
       });
     }
 
-    private registerOnServerEvents() : void {
-      this._hubConnection.on('ReceiveMessage', 
-      (data: CashFlow[])=> { this.cashflows = data; });
+    public GetInitial() : void{
+      this.cashflowService.GetAll().subscribe(resultado=>{
+      //this.cashflows = resultado;
+    });
     }
 
   ngOnInit(): void{
-
-    this.cashflowService.GetAll().subscribe(resultado=>{
-      this.cashflows = resultado;
-    });
+    // this.cashflowService.GetAll().subscribe(resultado=>{
+    //   this.cashflows = resultado;
+    // });
   }
-
-  
+ 
 
   // ExibirFormularioAtualizacao(cashFlowId: string) : void  {
   //   this.visibilidadeTabela = false;
@@ -89,7 +72,7 @@ export class CashflowComponent {
     //this.tituloFormulario = `Atualizar ${resultado.description}`;
 
       this.formulario = new FormGroup({
-        //cashFlowId: new FormControl(resultado.cashFlowId),
+        cashFlowId: new FormControl(cashFlow.cashFlowId),
         description: new FormControl(cashFlow.description),
         entry: new FormControl(cashFlow.entry),
         amount: new FormControl(cashFlow.amount),
@@ -110,8 +93,10 @@ export class CashflowComponent {
 
   EnviarFormulario(): void{
     const register: CashFlow = this.formulario.value;
-    
+    register.date = new Date();
+
     if (register.cashFlowId !== undefined){
+      register.cashFlowIdTemp = register.cashFlowId;
       this.cashflowService.UpdateRegister(register).subscribe((resultado)=>{
         this.visibilidadeTabela = true;
         this.visibilidadeFormulario = false;

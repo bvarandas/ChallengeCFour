@@ -18,12 +18,20 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CashflowComponent } from './components/cashflow/cashflow.component';
 import { CashflowService } from './cashflow.service';
+import { CurrencyMaskModule } from "ng2-currency-mask";
+import { DailyConsolidatedComponent } from './components/daily-consolidated/daily-consolidated.component';
+import { DailyConsolidatedService } from './daily-consolidated.service';
+import { MatTabsModule } from '@angular/material/tabs'
+
 
 @NgModule({
+  
   declarations: [
     AppComponent,
     RegistersComponent,
-    CashflowComponent
+    CashflowComponent,
+    DailyConsolidatedComponent
+  
   ],
   imports: [
     BrowserModule,
@@ -37,9 +45,11 @@ import { CashflowService } from './cashflow.service';
     MatDatepickerModule,
     MatSelectModule,
     MatNativeDateModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    CurrencyMaskModule,
+    MatTabsModule
   ],
-  providers: [HttpClientModule, RegistersService, CashflowService],
+  providers: [HttpClientModule, RegistersService, CashflowService, DailyConsolidatedService, DailyConsolidatedComponent,CashflowComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -28,7 +28,7 @@ public class CashFlowViewModel
     [DisplayName("Entry")]
     public string Entry { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "A Data é necessária")]
+    //[Required(ErrorMessage = "A Data é necessária")]
     [MinLength(1)]
     [MaxLength(100)]
     [DisplayName("Date")]

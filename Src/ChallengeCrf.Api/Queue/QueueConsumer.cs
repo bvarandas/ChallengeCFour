@@ -30,13 +30,23 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         _queueSettings = queueSettings.Value;
         _factory = new ConnectionFactory()
         {
-            HostName = _queueSettings.HostName
+            HostName = _queueSettings.HostName,
+            Port=5672,
         };
+
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(_queueSettings.ExchangeService, _queueSettings.ExchangeType, true, false);
-        _channel.QueueDeclare(_queueSettings.QueueName, true, false, false);
-        _channel.QueueBind(_queueSettings.QueueName, _queueSettings.ExchangeService, _queueSettings.RoutingKey);
+
+        _channel.QueueDeclare(_queueSettings.QueueNameCashFlow,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
+
+        _channel.QueueDeclare(_queueSettings.QueueNameDailyConsolidated,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
+
         _serviceProvider = provider;
         _flows = new Dictionary<string, CashFlow>();
     }
@@ -45,14 +55,50 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
     {
         _logger.LogInformation("Aguardando mensagens Event...");
         
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += Consumer_Received;
-        
-        _channel.BasicConsume(queue: _queueSettings.QueueName, autoAck: false, consumer: consumer);
-        
+        var consumerCashFlow = new EventingBasicConsumer(_channel);
+        consumerCashFlow.Received += Consumer_ReceivedCashFlow;
+
+        var consumerDailyConsolidated = new EventingBasicConsumer(_channel);
+        consumerDailyConsolidated.Received += ConsumerDailyConsolidated_Received;
+
+
+        _channel.BasicConsume(
+            queue: _queueSettings.QueueNameCashFlow, 
+            autoAck: false, 
+            consumer: consumerCashFlow);
+
+        _channel.BasicConsume(
+            queue: _queueSettings.QueueNameDailyConsolidated,
+            autoAck: false,
+            consumer: consumerDailyConsolidated);
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(_queueSettings.Interval, stoppingToken);
+        }
+    }
+
+    private async void ConsumerDailyConsolidated_Received(object? sender, BasicDeliverEventArgs e)
+    {
+        try
+        {
+            _logger.LogInformation("Chegou mensagem nova");
+            var message = e.Body.ToArray().DeserializeFromByteArrayProtobuf<DailyConsolidated>();
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var hubContext = scope.ServiceProvider
+                    .GetRequiredService<IHubContext<BrokerHub>>();
+
+                await hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessageDC", message);
+            }
+
+            _channel.BasicAck(e.DeliveryTag, false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            _channel.BasicNack(e.DeliveryTag, false, true);
         }
     }
 
@@ -61,12 +107,11 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         return _flows[registerId];
     }
 
-    
-
-    private void Consumer_Received(object? sender, BasicDeliverEventArgs e)
+    private async void Consumer_ReceivedCashFlow(object? sender, BasicDeliverEventArgs e)
     {
         try
         {
+            _logger.LogInformation("Chegou mensagem nova");
             var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
 
             using (var scope = _serviceProvider.CreateScope())
@@ -80,7 +125,8 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
                     _flows.TryAdd(mess.CashFlowId, mess);
                 });
                 
-                hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessage", messageList);
+                
+                await hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessageCF", messageList);
             }
 
             _channel.BasicAck(e.DeliveryTag, false);

@@ -1,17 +1,18 @@
-﻿using ProtoBuf;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using ProtoBuf;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChallengeCrf.Domain.Models;
 
-[Table("tb_DailyConsolidated")]
 [ProtoContract]
 public sealed class DailyConsolidated
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [ProtoMember(1)]
-    public int DailyConsolidatedId { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId Id { get; set; }
+
+    public string DailyConsolidatedId { get; set; }
 
     [ProtoMember(2)]
     public double AmountCredit { get; set; }
@@ -22,15 +23,26 @@ public sealed class DailyConsolidated
     [ProtoMember(4)]
     public DateTime Date { get; set; }
 
+    [ProtoMember(5)]
+    public double AmountTotal { get; set; }
+
+    [ProtoMember(6)]
+    public IEnumerable<CashFlow> CashFlows { get; set; }
+
+    [ProtoMember(7)]
+    public string Action { get; set; }
+
     public DailyConsolidated()
     {
     }
 
-    public DailyConsolidated(int dailyConsolidatedId, double amountCredit, double amountDebit, DateTime date)
+    public DailyConsolidated(string dailyConsolidatedId, double amountCredit, double amountDebit,double amountTotal,  DateTime date, IEnumerable<CashFlow> cashFlows)
     {
         DailyConsolidatedId = dailyConsolidatedId;
         AmountCredit = amountCredit;
         AmountDebit = amountDebit;
         Date = date;
+        AmountTotal = amountTotal;
+        CashFlows = cashFlows;
     }
 }
