@@ -1,14 +1,11 @@
 ﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Options;
 using ChallengeCrf.Domain.Extesions;
-using System.Threading.Channels;
-using ChallengeCrf.Domain.Interfaces;
-using System.Runtime.CompilerServices;
+using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.ViewModel;
 
-namespace ChallengeCrf.Worker.Consumer.Workers;
-
+namespace ChallengeCrf.Queue.Worker.Workers;
 public class WorkerProducer :  IWorkerProducer
 {
     private readonly ILogger<WorkerProducer> _logger;
@@ -86,7 +83,7 @@ public class WorkerProducer :  IWorkerProducer
     //    return Task.CompletedTask;
     //}
 
-    public Task PublishMessages(List<CashFlow> messageList)
+    public Task PublishMessages(List<CashFlowViewModel> messageList)
     {
         try
         {

@@ -33,4 +33,13 @@ public class CashFlowViewModel
     [MaxLength(100)]
     [DisplayName("Date")]
     public DateTime Date { get; set; }
+
+    public CashFlowViewModel(string cashFlowId, string description, double amount, string entry, DateTime date)
+    {
+        CashFlowId = cashFlowId;
+        Description = description;
+        Amount = amount;
+        Entry = entry;
+        Date = date;
+    }
 }

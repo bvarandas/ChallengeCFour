@@ -1,7 +1,5 @@
-﻿using ChallengeCrf.Domain.Events;
-
+﻿using ChallengeCrf.Domain.Bus;
 namespace ChallengeCrf.Domain.Notifications;
-
 public class DomainNotification : Event
 {
     public int DomainNotificationId { get; private set; }
@@ -16,5 +14,4 @@ public class DomainNotification : Event
         Key = key;
         Value = value;
     }
-
 }

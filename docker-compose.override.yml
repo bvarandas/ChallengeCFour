@@ -1,0 +1,60 @@
+version: '3.4'
+
+services:
+  challengecrf.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ElasticConfiguration__Uri=http://elasticsearch:9200"
+    ports:
+      - "5200"
+
+  challengecrf.queue.worker:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - "ElasticConfiguration__Uri=http://elasticsearch:9200"
+  
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    depends_on:
+      - challengecrf.queue.worker
+      - challengecrf.api
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  ocelot.apigateway:
+    container_name: ocelotapigateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development      
+    depends_on:
+#      - identityserver
+      - challengecrf.api
+      - challengecrf.queue.worker
+    ports:
+      - "9010:80"
+  
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+  
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+
+volumes:
+  mongo_data:
+  elasticsearch-data:  

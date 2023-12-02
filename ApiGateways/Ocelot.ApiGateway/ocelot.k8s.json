@@ -1,0 +1,61 @@
+{
+  "Routes": [
+    //SignalR
+    {
+      //"UpstreamHttpMethod": [ "GET", "POST" ],
+      "UpstreamPathTemplate": "/hubs/",
+      "DownstreamPathTemplate": "/hubs/",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5200
+        }
+      ]
+    },
+    {
+      //"UpstreamHttpMethod": [ "GET", "POST" ],
+      "UpstreamPathTemplate": "/hubs/{path}",
+      "DownstreamPathTemplate": "/hubs/{path}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5200
+        }
+      ]
+    },
+    //CashFlow API
+    {
+      "DownstreamPathTemplate": "/api/cashflow",
+      "DownstreamScheme": "http",
+      "ServiceName": "cashflow",
+      "UpstreamPathTemplate": "/api/cashflow",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    {
+      "DownstreamPathTemplate": "/api/cashflow/{id}",
+      "DownstreamScheme": "http",
+      "ServiceName": "cashflow",
+      "UpstreamPathTemplate": "/api/cashflow/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    //Daily Consolidated API
+    {
+      "DownstreamPathTemplate": "/api/dailyconsolidated",
+      "DownstreamScheme": "http",
+      "ServiceName": "dailyconsolidated",
+      "UpstreamPathTemplate": "/api/dailyconsolidated",
+      "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Namespace": "default",
+      "Type": "KubernetesServiceDiscoveryProvider"
+    }
+  }
+}

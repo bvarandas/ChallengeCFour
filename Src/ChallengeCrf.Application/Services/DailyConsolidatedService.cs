@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
+using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Appplication.Interfaces;
 using ChallengeCrf.Domain.Bus;
-using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
+
 
 namespace ChallengeCrf.Application.Services;
 public class DailyConsolidatedService : IDailyConsolidatedService

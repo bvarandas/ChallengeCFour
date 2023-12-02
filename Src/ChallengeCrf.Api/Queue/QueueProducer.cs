@@ -1,8 +1,8 @@
-﻿using ChallengeCrf.Domain.Interfaces;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Options;
+using ChallengeCrf.Application.Interfaces;
 
 namespace ChallengeCrf.Api.Producer;
 

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChallengeCrf.Domain\ChallengeCrf.Domain.csproj" />
+    <ProjectReference Include="..\ChallengeCrf.Application\ChallengeCrf.Application.csproj" />
   </ItemGroup>
 
 </Project>

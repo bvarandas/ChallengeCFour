@@ -1,13 +1,13 @@
-﻿using Amazon.Runtime.Internal.Util;
-using AutoMapper;
+﻿using AutoMapper;
+using ChallengeCrf.Aplication.Interfaces;
+using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.EventSourceNormalizes;
+using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Domain.Bus;
-using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
-using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using Microsoft.Extensions.Logging;
-
 namespace ChallengeCrf.Application.Services;
 
 public  class CashFlowService : ICashFlowService
@@ -30,32 +30,32 @@ public  class CashFlowService : ICashFlowService
         _mediator = mediator;
         _logger = logger;
     }
-    public async Task<IAsyncEnumerable<CashFlow>> GetListAllAsync()
+    public async Task<IAsyncEnumerable<CashFlowViewModel>> GetListAllAsync()
     {
         _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
-        return await _cashFlowRepository.GetAllCashFlowAsync();
+        var enumarable =_cashFlowRepository.GetAllCashFlowAsync();
+        var result =_mapper.Map<IAsyncEnumerable<CashFlow>, IAsyncEnumerable<CashFlowViewModel>>(await enumarable);
+        return result;
     }
 
-    public async Task<CashFlow> GetCashFlowyIDAsync(string cashFlowId)
+    public async Task<CashFlowViewModel> GetCashFlowyIDAsync(string cashFlowId)
     {
-        return await _cashFlowRepository.GetCashFlowByIDAsync(cashFlowId);
+        var cashFlow = await _cashFlowRepository.GetCashFlowByIDAsync(cashFlowId);
+        var result = _mapper.Map<CashFlowViewModel>(cashFlow);
+        return  result;
     }
 
-    public async Task<CashFlowCommand> AddCashFlowAsync(CashFlow register)
+    public async Task AddCashFlowAsync(CashFlowCommand register)
     {
         _logger.LogInformation("Tentando inserir no banco de dados");
         var addCommand = _mapper.Map<InsertCashFlowCommand>(register);
         await _mediator.SendCommand(addCommand);
-
-        return addCommand;
     }
 
-    public async Task<CashFlowCommand> UpdateCashFlowAsync(CashFlow register)
+    public async Task UpdateCashFlowAsync(CashFlowCommand register)
     {
         var updateCommand = _mapper.Map<UpdateCashFlowCommand>(register);
         await _mediator.SendCommand(updateCommand);
-
-        return updateCommand;
     }
 
     public async void RemoveCashFlowAsync(string cashFlowId)
@@ -64,9 +64,9 @@ public  class CashFlowService : ICashFlowService
         await _mediator.SendCommand(deleteCommand);
     }
 
-    public IList<CashFlowHistoryData> GetAllHistory(int registerId)
+    public IList<CashFlowHistoryData> GetAllHistory(int cashFlowId)
     {
-        return CashFlowHistory.ToJavaScriptRegisterHistory(_eventStoreRepository.All(registerId));
+        return CashFlowHistory.ToJavaScriptRegisterHistory(_eventStoreRepository.All(cashFlowId));
     }
 
     public void Dispose()

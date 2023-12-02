@@ -1,4 +1,5 @@
-﻿using ChallengeCrf.Domain.Interfaces;
+﻿using ChallengeCrf.Appplication.Interfaces;
+using ChallengeCrf.Domain.Interfaces;
 namespace ChallengeCrf.Queue.Worker.Workers;
 
 public class WorkerDailyConsolidated : BackgroundService

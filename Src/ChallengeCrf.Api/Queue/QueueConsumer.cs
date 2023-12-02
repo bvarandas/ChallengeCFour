@@ -1,4 +1,5 @@
 ﻿using ChallengeCrf.Api.Hubs;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;

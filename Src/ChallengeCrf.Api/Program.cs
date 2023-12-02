@@ -8,13 +8,21 @@ using Serilog;
 using ProtoBuf.Meta;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using Common.Logging;
+using ChallengeCrf.Application.Interfaces;
+using Common.Logging.Correlation;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
 .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
+
+builder.Host.UseSerilog(Logging.ConfigureLogger);
 
 NativeInjectorBoostrapper.RegisterServices(builder.Services, config);
 
@@ -26,20 +34,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseStatusCodePages(async statusCodeContext
     => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
                  .ExecuteAsync(statusCodeContext.HttpContext));
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    //.WriteTo.File("logs.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-app.MapGet("/", (ILoggerFactory loggerFactory) => {
-    var logger = loggerFactory.CreateLogger("Start");
-    logger.LogInformation("Starting...");
-    return "Logging at work!";
-});
+//app.MapHealthChecks("/healthz");
 
 app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer, ILogger<Program> logger ) => 
 {

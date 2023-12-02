@@ -4,14 +4,14 @@ using RabbitMQ.Client.Events;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Extesions;
 using Microsoft.Extensions.Options;
-using ChallengeCrf.Domain.CommandHandlers;
-using ChallengeCrf.Domain.Bus;
-using ChallengeCrf.Domain.Commands;
-using Microsoft.EntityFrameworkCore.Internal;
-using ChallengeCrf.Domain.Interfaces;
 using System.Collections.Concurrent;
+using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Appplication.Interfaces;
+using AutoMapper;
+using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.ViewModel;
 
-namespace ChallengeCrf.Worker.Consumer.Workers;
+namespace ChallengeCrf.Queue.Worker.Workers;
 
 public class WorkerConsumer : BackgroundService, IWorkerConsumer
 {
@@ -24,17 +24,21 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
     private readonly IConnection _connection;
     private readonly IModel _channel;
     private readonly ConcurrentQueue<CashFlow> _queueRegister;
+    private readonly IMapper _mapper;
     public WorkerConsumer(IOptions<QueueCommandSettings> queueSettings, 
         ILogger<WorkerConsumer> logger, 
         ICashFlowService registerService,
         IDailyConsolidatedService dailyConsolidatedService,
-        IWorkerProducer workerProducer)
+        IWorkerProducer workerProducer,
+        IMapper mapper)
     {
         _logger = logger;
         _queueSettings = queueSettings.Value;
         _dailyConsolidatedService = dailyConsolidatedService;
+        _mapper = mapper;
 
         _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
+        
         _factory = new ConnectionFactory()
         {
             HostName = _queueSettings.HostName,
@@ -104,10 +108,11 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
-            //_channel.BasicNack(e.DeliveryTag, false, true);
-            _channel.BasicAck(e.DeliveryTag, true);
+            _channel.BasicNack(e.DeliveryTag, false, true);
+            //_channel.BasicAck(e.DeliveryTag, true);
         }
     }
+
     private async void ConsumerCashFlow_Received(object? sender, BasicDeliverEventArgs e)
     {
         try
@@ -122,11 +127,13 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
             switch(message.Action)
             {
                 case "insert":
-                    await _flowService.AddCashFlowAsync(message);
+                    var commandInsert = _mapper.Map<CashFlow, CashFlowCommand>(message);
+                    await _flowService.AddCashFlowAsync(commandInsert);
                     break;
 
                 case "update":
-                    await _flowService.UpdateCashFlowAsync(message);
+                    var commandUpdate = _mapper.Map<CashFlow, CashFlowCommand>(message);
+                    await _flowService.UpdateCashFlowAsync(commandUpdate);
                     break;
 
                 case "remove":
@@ -134,14 +141,18 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
                     break;
 
                 case "getall":
+                    
                     var registerlist = await _flowService.GetListAllAsync();
+                    
                     if (registerlist is not null)
+                    {
                         await WorkerProducer._Singleton.PublishMessages(registerlist.ToListAsync().Result);
+                    }
                     break;
 
                 case "get":
                     var register = await _flowService.GetCashFlowyIDAsync(message.CashFlowId);
-                    var list = new List<CashFlow>();
+                    var list = new List<CashFlowViewModel>();
                     if (register is not null)
                     {
                         list.Add(register);

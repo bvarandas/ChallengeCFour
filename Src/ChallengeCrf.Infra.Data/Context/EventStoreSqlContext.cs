@@ -1,4 +1,5 @@
-﻿using ChallengeCrf.Domain.Events;
+﻿using ChallengeCrf.Application.Events;
+using ChallengeCrf.Domain.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using MongoFramework;

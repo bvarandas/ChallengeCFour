@@ -1,7 +1,4 @@
-﻿using ProtoBuf;
-
-namespace ChallengeCrf.Application.ViewModel;
-
+﻿namespace ChallengeCrf.Application.ViewModel;
 public class DailyConsolidatedViewModel
 {
     public int DailyConsolidatedId { get; set; }
@@ -9,6 +6,5 @@ public class DailyConsolidatedViewModel
     public double AmountDebit { get; set; }
     public DateTime Date { get; set; }
     public double AmoutTotal { get; set; }
-
-    public IEnumerable<CashFlowViewModel> CashFlows { get; set; }
+    public IEnumerable<CashFlowViewModel> CashFlows { get; set; } = null!;
 }
