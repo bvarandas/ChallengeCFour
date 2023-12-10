@@ -1,5 +1,4 @@
 ﻿using ChallengeCrf.Domain.Bus;
-using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Events;
 using MediatR;
 namespace ChallengeCrf.Infra.CrossCutting.Bus;

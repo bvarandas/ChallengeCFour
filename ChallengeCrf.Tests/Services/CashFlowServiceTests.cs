@@ -1,9 +1,9 @@
 ﻿using Amazon.Runtime.Internal.Util;
 using AutoFixture;
 using AutoMapper;
+using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Bus;
-using ChallengeCrf.Domain.Commands;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
@@ -43,7 +43,12 @@ public class CashFlowServiceTests
     //}
     public void AddCashFlowAsync_InsertNotNull()
     {
-        var cashFlow = new CashFlow("total recall insert", 55.66, "Debito", DateTime.Now, "insert");
+        var cashFlow = new InsertCashFlowCommand(
+            "total recall insert",
+            55.66,
+            "Debito",
+            DateTime.Now);
+        
         var result = cashFlowService.AddCashFlowAsync(cashFlow);
         Assert.NotNull(result);
     }
@@ -51,15 +56,15 @@ public class CashFlowServiceTests
     [Fact]
     public void AddCashFlowAsync_InsertNull()
     {
-        var cashFlow = new CashFlow("total recall insert", 55.66, "Debito", DateTime.Now, "insert");
+        var cashFlow = new InsertCashFlowCommand("total recall insert", 55.66, "Debito", DateTime.Now);
         var result = cashFlowService.AddCashFlowAsync(cashFlow);
-        Assert.Null(result.Result);
+        Assert.Null(result);
     }
 
     [Fact]
     public void UpdateCashFlowAsync_InsertNotNull()
     {
-        var cashFlow = new CashFlow("507f1f77bcf86cd799439011", "507f1f77bcf86cd799439011", "total recall update", 66.77, "Debito", DateTime.Now, "update");
+        var cashFlow = new UpdateCashFlowCommand("507f1f77bcf86cd799439011", "total recall update", 66.77, "Debito", DateTime.Now);
         var result = cashFlowService.UpdateCashFlowAsync(cashFlow);
         Assert.NotNull(result);
     }
@@ -67,9 +72,9 @@ public class CashFlowServiceTests
     [Fact]
     public void UpdateCashFlowAsync_InsertNull()
     {
-        var cashFlow = new CashFlow("507f1f77bcf86cd799439011", "507f1f77bcf86cd799439011", "total recall update", 66.77, "Debito", DateTime.Now, "update");
+        var cashFlow = new UpdateCashFlowCommand("507f1f77bcf86cd799439011","total recall update", 66.77, "Debito", DateTime.Now);
         var result = cashFlowService.UpdateCashFlowAsync(cashFlow);
-        Assert.Null(result.Result);
+        Assert.Null(result);
     }
 
 

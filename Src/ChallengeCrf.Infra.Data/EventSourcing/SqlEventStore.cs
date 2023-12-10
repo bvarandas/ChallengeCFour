@@ -1,4 +1,5 @@
-﻿using ChallengeCrf.Domain.Events;
+﻿using ChallengeCrf.Domain.Bus;
+using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using Newtonsoft.Json;
 

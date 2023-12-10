@@ -1,7 +1,5 @@
 ﻿using MediatR;
-
 namespace ChallengeCrf.Domain.Notifications;
-
 public class DomainNotificationHandler : INotificationHandler<DomainNotification>
 {
     private List<DomainNotification> _notifications;

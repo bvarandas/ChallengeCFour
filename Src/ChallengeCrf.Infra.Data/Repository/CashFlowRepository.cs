@@ -1,10 +1,8 @@
 ﻿using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Infra.Data.Context;
-//using Microsoft.EntityFrameworkCore;
 using MongoFramework;
 using Microsoft.EntityFrameworkCore;
-using Amazon.Runtime.Internal.Util;
 using Microsoft.Extensions.Logging;
 
 namespace ChallengeCrf.Infra.Data.Repository;

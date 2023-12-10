@@ -1,7 +1,9 @@
 ﻿using ChallengeCrf.Api.Producer;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Queue.Worker.Configurations;
+using Common.Logging.Correlation;
 using System.Reflection;
 
 namespace ChallengeCrf.Api.Configurations;
@@ -17,6 +19,7 @@ internal class NativeInjectorBoostrapper
         services.Configure<QueueEventSettings>(config.GetSection(nameof(QueueEventSettings)));
         services.AddSingleton<IQueueConsumer, QueueConsumer>();
         services.AddSingleton<IQueueProducer, QueueProducer>();
+        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
 
         //SignalR
         services.AddSignalR();

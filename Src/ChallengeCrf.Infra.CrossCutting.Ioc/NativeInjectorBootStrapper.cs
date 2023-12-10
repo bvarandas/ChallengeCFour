@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ChallengeCrf.Infra.Data.UoW;
+
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Application.Services;
 using MediatR;
@@ -8,12 +8,16 @@ using ChallengeCrf.Domain.EventHandlers;
 using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Infra.CrossCutting.Bus;
-using ChallengeCrf.Infra.Data.Context;
-using ChallengeCrf.Infra.Data.EventSourcing;
-using ChallengeCrf.Infra.Data.Repository.EventSourcing;
-using ChallengeCrf.Domain.CommandHandlers;
-using ChallengeCrf.Domain.Commands;
+using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.CommandHandlers;
 using ChallengeCrf.Infra.Data.Repository;
+using ChallengeCrf.Infra.Data.UoW;
+using ChallengeCrf.Infra.Data.Context;
+using ChallengeCrf.Infra.Data.Repository.EventSourcing;
+
+using ChallengeCrf.Infra.Data.EventSourcing;
+using ChallengeCrf.Appplication.Interfaces;
 
 namespace ChallengeCrf.Infra.CrossCutting.Ioc;
 
@@ -25,34 +29,33 @@ public class NativeInjectorBootStrapper
         //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         
         // Domain Bus (Mediator)
-        services.AddScoped<IMediatorHandler, InMemoryBus>();
+        services.AddSingleton<IMediatorHandler, InMemoryBus>();
 
         // Application
-        services.AddScoped<ICashFlowService, CashFlowService>();
+        services.AddSingleton<ICashFlowService, CashFlowService>();
+        services.AddSingleton<IDailyConsolidatedService, DailyConsolidatedService>();
 
         // Domain - Events
-        services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+        services.AddSingleton<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 
-        services.AddScoped<INotificationHandler<CashFlowInsertedEvent>, RegisterEventHandler>();
-        services.AddScoped<INotificationHandler<CashFlowUpdatedEvent>, RegisterEventHandler>();
-        services.AddScoped<INotificationHandler<CashFlowRemovedEvent>, RegisterEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowInsertedEvent>, RegisterEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowUpdatedEvent>, RegisterEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowRemovedEvent>, RegisterEventHandler>();
 
         // Domain - Commands
-        services.AddScoped<IRequestHandler<InsertCashFlowCommand, bool>, CashFlowCommandHandler>();
-        services.AddScoped<IRequestHandler<UpdateCashFlowCommand, bool>, CashFlowCommandHandler>();
-        services.AddScoped<IRequestHandler<RemoveCashFlowCommand, bool>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<InsertCashFlowCommand, bool>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<UpdateCashFlowCommand, bool>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<RemoveCashFlowCommand, bool>, CashFlowCommandHandler>();
 
         // Infra - Data
-        services.AddScoped<ICashFlowRepository, CashFlowRepository>();
-
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<CashFlowContext>();
-
-        // Infra - Data EventSourcing
-        services.AddScoped<IEventStoreRepository, EventStoreSQLRepository>();
-        services.AddScoped<IEventStore, SqlEventStore>();
-        services.AddScoped<EventStoreSqlContext>();
-
+        services.AddSingleton<ICashFlowRepository, CashFlowRepository>();
+        services.AddSingleton<IDailyConsolidatedRepository, DailyConsolidatedRepository>();
+        services.AddSingleton<IUnitOfWork, UnitOfWork>();
+        services.AddSingleton<CashFlowContext>();
         
+        // Infra - Data EventSourcing
+        services.AddSingleton<IEventStoreRepository, EventStoreSQLRepository>();
+        services.AddSingleton<IEventStore, SqlEventStore>();
+        services.AddSingleton<EventStoreSqlContext>();
     }
 }

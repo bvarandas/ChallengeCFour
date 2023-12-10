@@ -1,5 +1,5 @@
-﻿using ChallengeCrf.Domain.Events;
-using ChallengeCrf.Domain.Models;
+﻿using ChallengeCrf.Application.ViewModel;
+using ChallengeCrf.Domain.Events;
 using Newtonsoft.Json;
 namespace ChallengeCrf.Application.EventSourceNormalizes;
 

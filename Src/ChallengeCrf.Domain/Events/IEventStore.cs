@@ -1,4 +1,5 @@
-﻿namespace ChallengeCrf.Domain.Events;
+﻿using ChallengeCrf.Domain.Bus;
+namespace ChallengeCrf.Domain.Events;
 
 public interface IEventStore
 {
