@@ -1,12 +1,12 @@
 ﻿using Amazon.Runtime.Internal.Util;
 using AutoFixture;
 using AutoMapper;
-using ChallengeCrf.Aplication.Interfaces;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;

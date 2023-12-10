@@ -1,7 +1,7 @@
 ﻿using ChallengeCrf.Domain.Bus;
 using System.ComponentModel.DataAnnotations;
 
-namespace ChallengeCrf.Application.Events;
+namespace ChallengeCrf.Domain.Events;
 public class StoredEvent : Event
 {
     [Key]

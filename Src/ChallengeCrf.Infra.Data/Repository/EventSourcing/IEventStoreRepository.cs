@@ -1,5 +1,6 @@
-﻿using ChallengeCrf.Application.Events;
-namespace ChallengeCrf.Aplication.Interfaces;
+﻿using ChallengeCrf.Domain.Events;
+
+namespace ChallengeCrf.Infra.Data.Repository.EventSourcing;
 public interface IEventStoreRepository : IDisposable
 {
     void Store(StoredEvent theEvent);

@@ -10,5 +10,8 @@ public  class DomainToViewModelMappingProfile : Profile
     {
         
         CreateMap<CashFlow, CashFlowViewModel>().ConstructUsing(c => new CashFlowViewModel(c.CashFlowId, c.Description, c.Amount, c.Entry, c.Date));
+
+
+        CreateMap<CashFlow, CashFlowViewModel>().ConstructUsing(c => new CashFlowViewModel(c.CashFlowId, c.Description, c.Amount, c.Entry, c.Date));
     }
 }

@@ -22,6 +22,9 @@ public class ViewModelToDomainMappingProfile : Profile
         CreateMap<CashFlow, UpdateCashFlowCommand>()
             .ConstructUsing(c => new UpdateCashFlowCommand(c.CashFlowId, c.Description, c.Amount,c.Entry, c.Date));
 
-        
+        //CreateMap<CashFlow, CashFlowCommand>()
+        //    .ConstructUsing(c => new CashFlowCommand(c.CashFlowId, c.Description, c.Amount, c.Entry, c.Date));
+
+
     }
 }

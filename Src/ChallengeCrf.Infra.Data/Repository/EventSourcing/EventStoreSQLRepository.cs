@@ -1,5 +1,4 @@
-﻿using ChallengeCrf.Aplication.Interfaces;
-using ChallengeCrf.Application.Events;
+﻿using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Infra.Data.Context;
 
 namespace ChallengeCrf.Infra.Data.Repository.EventSourcing;

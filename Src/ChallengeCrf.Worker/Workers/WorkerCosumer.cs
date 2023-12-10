@@ -127,12 +127,12 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
             switch(message.Action)
             {
                 case "insert":
-                    var commandInsert = _mapper.Map<CashFlow, CashFlowCommand>(message);
+                    var commandInsert = _mapper.Map<CashFlow, InsertCashFlowCommand>(message);
                     await _flowService.AddCashFlowAsync(commandInsert);
                     break;
 
                 case "update":
-                    var commandUpdate = _mapper.Map<CashFlow, CashFlowCommand>(message);
+                    var commandUpdate = _mapper.Map<CashFlow, UpdateCashFlowCommand>(message);
                     await _flowService.UpdateCashFlowAsync(commandUpdate);
                     break;
 

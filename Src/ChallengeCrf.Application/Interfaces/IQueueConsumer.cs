@@ -1,8 +1,8 @@
-﻿using ChallengeCrf.Domain.Models;
+﻿using ChallengeCrf.Application.ViewModel;
 
 namespace ChallengeCrf.Application.Interfaces;
 
 public interface IQueueConsumer
 {
-    CashFlow RegisterGetById(string cashFlowId);
+    CashFlowViewModel RegisterGetById(string cashFlowId);
 }

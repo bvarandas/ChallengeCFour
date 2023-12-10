@@ -1,5 +1,6 @@
 ﻿using ChallengeCrf.Api.Hubs;
 using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
@@ -21,7 +22,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
     private readonly IModel _channel;
     private readonly IServiceProvider _serviceProvider;
 
-    private readonly Dictionary<string, CashFlow> _flows;
+    private readonly Dictionary<string, CashFlowViewModel> _flows;
     public QueueConsumer(
         IOptions<QueueEventSettings> queueSettings, 
         ILogger<QueueConsumer> logger,
@@ -49,7 +50,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
             autoDelete: false);
 
         _serviceProvider = provider;
-        _flows = new Dictionary<string, CashFlow>();
+        _flows = new Dictionary<string, CashFlowViewModel>();
     }
 
     protected override  async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -103,7 +104,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         }
     }
 
-    public CashFlow RegisterGetById(string registerId)
+    public CashFlowViewModel RegisterGetById(string registerId)
     {
         return _flows[registerId];
     }
@@ -113,7 +114,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         try
         {
             _logger.LogInformation("Chegou mensagem nova");
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlowViewModel>>();
 
             using (var scope = _serviceProvider.CreateScope())
             {

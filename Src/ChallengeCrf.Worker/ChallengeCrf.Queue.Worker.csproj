@@ -23,8 +23,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\Common.Logging\Common.Logging.csproj" />
-    <ProjectReference Include="..\ChallengeCrf.Application\ChallengeCrf.Application.csproj" />
-    <ProjectReference Include="..\ChallengeCrf.Infra.CrossCutting.Bus\ChallengeCrf.Infra.CrossCutting.Bus.csproj" />
+    <ProjectReference Include="..\ChallengeCrf.Domain\ChallengeCrf.Domain.csproj" />
     <ProjectReference Include="..\ChallengeCrf.Infra.CrossCutting.Ioc\ChallengeCrf.Infra.CrossCutting.Ioc.csproj" />
+    <ProjectReference Include="..\ChallengeCrf.Infra.Data\ChallengeCrf.Infra.Data.csproj" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using ChallengeCrf.Domain.Bus;
+namespace ChallengeCrf.Domain.Events;
 
-namespace ChallengeCrf.Application.Events;
 public interface IEventStore
 {
     void Save<T>(T theEvent) where T : Event;

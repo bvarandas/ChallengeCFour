@@ -34,7 +34,7 @@ export class AppComponent {
 
   private CreateConnection(){
     this._hubConnection = new HubConnectionBuilder()
-                              .withUrl("http://localhost:5200/hubs/brokerhub")
+                              .withUrl("http://localhost:9010/hubs/brokerhub")
                               .build();
     this._hubConnection.on('ReceiveMessageCF', 
       (data: CashFlow[])=> 

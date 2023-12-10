@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ChallengeCrf.Application\ChallengeCrf.Application.csproj" />
     <ProjectReference Include="..\ChallengeCrf.Infra.CrossCutting.Bus\ChallengeCrf.Infra.CrossCutting.Bus.csproj" />
-    <ProjectReference Include="..\ChallengeCrf.Infra.Data\ChallengeCrf.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

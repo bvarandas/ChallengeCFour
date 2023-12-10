@@ -20,6 +20,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Application", "Src\ChallengeCrf.Application\ChallengeCrf.Application.csproj", "{99B0FECE-7623-43A4-A00F-DF364F5A831D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Infra.Data", "Src\ChallengeCrf.Infra.Data\ChallengeCrf.Infra.Data.csproj", "{E2D418DA-E028-4932-8226-958374DA4997}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F6142CAB-6799-456B-95E8-BBD756A04253} = {F6142CAB-6799-456B-95E8-BBD756A04253}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Infra.CrossCutting.Bus", "Src\ChallengeCrf.Infra.CrossCutting.Bus\ChallengeCrf.Infra.CrossCutting.Bus.csproj", "{E505BBE1-9538-4CAE-9A44-92BEAC9018F0}"
 EndProject
@@ -41,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Logging", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{F069D66F-BB3E-4A66-BB2B-45A579847EB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ocelot.ApiGateway", "ApiGateways\Ocelot.ApiGateway\Ocelot.ApiGateway.csproj", "{4492A15C-089D-4A50-8C24-C89B1E409D22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ocelot.ApiGateway", "ApiGateways\Ocelot.ApiGateway\Ocelot.ApiGateway.csproj", "{4492A15C-089D-4A50-8C24-C89B1E409D22}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AE53F67F-12A7-4901-AD45-0C0406617410}"
 EndProject

@@ -1,5 +1,5 @@
-﻿using ChallengeCrf.Application.Events;
-using ChallengeCrf.Domain.Bus;
+﻿using ChallengeCrf.Domain.Bus;
+using ChallengeCrf.Domain.Events;
 using MediatR;
 namespace ChallengeCrf.Infra.CrossCutting.Bus;
 public class InMemoryBus : IMediatorHandler

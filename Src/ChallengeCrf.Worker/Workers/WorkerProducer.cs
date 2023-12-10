@@ -41,7 +41,7 @@ public class WorkerProducer :  IWorkerProducer
                 exchange: "amq.direct",
                 type: _queueSettings.ExchangeType, 
                 durable: true,
-                autoDelete:false);
+                autoDelete: false);
 
             _channel.QueueDeclare(
                 queue: _queueSettings.QueueNameCashFlow,

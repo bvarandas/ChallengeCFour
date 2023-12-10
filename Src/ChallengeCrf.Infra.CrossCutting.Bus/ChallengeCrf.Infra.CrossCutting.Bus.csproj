@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChallengeCrf.Application\ChallengeCrf.Application.csproj" />
     <ProjectReference Include="..\ChallengeCrf.Domain\ChallengeCrf.Domain.csproj" />
   </ItemGroup>
 

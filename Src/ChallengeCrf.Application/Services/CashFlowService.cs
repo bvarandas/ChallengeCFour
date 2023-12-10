@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChallengeCrf.Aplication.Interfaces;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.EventSourceNormalizes;
 using ChallengeCrf.Application.Interfaces;
@@ -7,6 +6,7 @@ using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using Microsoft.Extensions.Logging;
 namespace ChallengeCrf.Application.Services;
 
@@ -34,8 +34,13 @@ public  class CashFlowService : ICashFlowService
     {
         _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
         var enumarable =_cashFlowRepository.GetAllCashFlowAsync();
-        var result =_mapper.Map<IAsyncEnumerable<CashFlow>, IAsyncEnumerable<CashFlowViewModel>>(await enumarable);
-        return result;
+        var listResult = new List<CashFlowViewModel>();
+        
+        await foreach (var item in await enumarable)
+            listResult.Add(_mapper.Map<CashFlowViewModel>(item));
+
+        //var result = _mapper.Map<IAsyncEnumerable<CashFlow>, IAsyncEnumerable<CashFlowViewModel>>(await enumarable);
+        return listResult.ToAsyncEnumerable();
     }
 
     public async Task<CashFlowViewModel> GetCashFlowyIDAsync(string cashFlowId)

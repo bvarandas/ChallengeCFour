@@ -16,7 +16,14 @@ builder.Services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
 builder.Services.AddCors(options => 
 {
     options.AddPolicy("CorsPolicy",
-                policy => { policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); });
+                policy => {
+                    policy
+                    .WithOrigins("http://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials(); 
+                    
+                });
 });
 builder.Services.AddOcelot()
     .AddKubernetes()
@@ -33,12 +40,12 @@ if (!app.Environment.IsDevelopment())
 
 app.AddCorrelationIdMiddleware();
 app.UseRouting();
-app.UseCors();
+app.UseCors("CorsPolicy");
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello Ocelot"); });
 });
-
+app.UseWebSockets();
 await app.UseOcelot();
 
 app.Run();

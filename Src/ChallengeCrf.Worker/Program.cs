@@ -32,19 +32,18 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             services.AddAppConfiguration(config);
 
-            NativeInjectorBootStrapper.RegisterServices(services);
+            services.AddSingleton<IWorkerProducer, WorkerProducer>();
+            //services.AddSingleton<IWorkerConsumer, WorkerConsumer>();
 
             services.AddHostedService<WorkerConsumer>();
             services.AddHostedService<WorkerDailyConsolidated>();
-
-            services.AddSingleton<IWorkerProducer, WorkerProducer>();
 
             services.Configure<CashFlowSettings>(config.GetSection("CashFlowStoreDatabase"));
             services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
 
             services.AddTransient<IMongoDbConnection>((provider) =>
             {
-                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@localhost:27017/challengeCrf?authSource=admin");
+                var urlMongo = new MongoDB.Driver.MongoUrl("mongodb://root:example@mongo:27017/challengeCrf?authSource=admin");
                 
                 return MongoDbConnection.FromUrl(urlMongo);
             });
@@ -55,7 +54,9 @@ IHost host = Host.CreateDefaultBuilder(args)
             {
                 cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
             });
-            
+
+            NativeInjectorBootStrapper.RegisterServices(services);
+
         }).Build();
 
     await host
