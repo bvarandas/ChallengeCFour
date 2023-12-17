@@ -64,25 +64,6 @@ public class WorkerProducer :  IWorkerProducer
         _instance = this;
     }
 
-    //public Task PublishMessage(CashFlow message)
-    //{
-    //    try
-    //    {
-    //        var body = message.SerializeToByteArrayProtobuf();
-
-    //        _channel.BasicPublish(
-    //            exchange: "",
-    //            routingKey: _queueSettings.QueueNameCashFlow,
-    //            basicProperties: null,
-    //            body: body);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex, $"{ex.Message}");
-    //    }
-    //    return Task.CompletedTask;
-    //}
-
     public Task PublishMessages(List<CashFlowViewModel> messageList)
     {
         try

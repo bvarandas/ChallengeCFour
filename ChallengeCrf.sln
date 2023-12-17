@@ -34,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Queue.Worker",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AA15B477-A3E9-4CAA-BDBA-A07911817A91}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Tests", "ChallengeCrf.Tests\ChallengeCrf.Tests.csproj", "{3736640B-0205-4B89-9535-A95833846DE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Tests", "Src\ChallengeCrf.Tests\ChallengeCrf.Tests.csproj", "{3736640B-0205-4B89-9535-A95833846DE0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChallengeCrf.Api", "Src\ChallengeCrf.Api\ChallengeCrf.Api.csproj", "{66B63018-7314-428D-A30D-4249FDC3C5FB}"
 EndProject

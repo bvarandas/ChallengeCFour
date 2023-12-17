@@ -1,4 +1,5 @@
 ﻿using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Domain.Constants;
 using FluentValidation;
 
 namespace ChallengeCrf.Application.Validations;
@@ -15,22 +16,24 @@ public abstract class CashFlowValidation<T> : AbstractValidator<T> where T : Cas
     {
         RuleFor(c => c.Description)
             .NotEmpty().WithMessage("É necessário inserir a Descrição!")
-            .Length(2, 150).WithMessage("É necessário inserir ao menos 2 caracteres na Descrição!");
+            .Length(3, 150).WithMessage("É necessário inserir ao menos 3 caracteres na Descrição!");
     }
 
     protected void ValidateCashValue()
     {
         RuleFor(c => c.Amount)
             .NotEqual(0)
-            .WithMessage("É necessário inserir um valor válido!");
-   
+            .WithMessage("É necessário inserir um valor válido!")
+            .LessThan(0)
+            .WithMessage("É necessário inserir um valor positivo!");
     }
 
     protected void ValidateCashDirection()
     {
         RuleFor(c => c.Entry)
             .NotEmpty().WithMessage("É necessário inserir o Lançamento!")
-            .WithMessage("É necessário inserir Débito ou Crédito!");
+            .Must(IsValidEntry)
+            .WithMessage("É necessário inserir Débito ou Crédito válido!");
     }
 
     protected void ValidateDate()
@@ -38,7 +41,16 @@ public abstract class CashFlowValidation<T> : AbstractValidator<T> where T : Cas
         RuleFor(c => c.Date)
             .NotEmpty()
             .WithMessage("É necessário inserir a Data !")
-            //.Length(1, 150)
-            .WithMessage("É necessário inserir ao menos 1 caracter na Data!");
+            .Must(d=>IsValidDate(d.ToString()))
+            .WithMessage("É necessário inserir uma data válida!");
+    }
+
+    private bool IsValidEntry(string value)
+    => value == CashFlowEntry.Credit || value == CashFlowEntry.Debit;
+
+    private bool IsValidDate(string value)
+    {
+        DateTime date;
+        return DateTime.TryParse(value, out date);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace ChallengeCrf.Application.Commands;
+﻿using ChallengeCrf.Domain.Validations;
+
+namespace ChallengeCrf.Application.Commands;
 
 public class UpdateCashFlowCommand : CashFlowCommand
 {
@@ -13,7 +15,7 @@ public class UpdateCashFlowCommand : CashFlowCommand
 
     public override bool IsValid()
     {
-        //ValidationResult = new 
-        return true;
+        ValidationResult = new UpdateCashFlowCommandValidation().Validate(this);
+        return ValidationResult.IsValid;
     }
 }

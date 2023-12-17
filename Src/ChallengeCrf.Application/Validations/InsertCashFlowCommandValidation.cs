@@ -1,9 +1,9 @@
 ﻿using ChallengeCrf.Application.Commands;
 namespace ChallengeCrf.Application.Validations;
 
-public class InsertCashFlowDommandValidation : CashFlowValidation<InsertCashFlowCommand>
+public class InsertCashFlowCommandValidation : CashFlowValidation<InsertCashFlowCommand>
 {
-    public InsertCashFlowDommandValidation()
+    public InsertCashFlowCommandValidation()
     {
         ValidateDescription();
         ValidateCashDirection();

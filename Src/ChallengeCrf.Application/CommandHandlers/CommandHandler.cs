@@ -2,6 +2,7 @@
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Notifications;
 using MediatR;
+using System.Threading;
 
 namespace ChallengeCrf.Application.CommandHandlers;
 
@@ -26,10 +27,10 @@ public class CommandHandler
         }
     }
 
-    public async Task<bool> Commit()
+    public async Task<bool> Commit(CancellationToken cancelationToken )
     {
         if (_notifications.HasNotifications()) return false;
-        if (await _uow.Commit()) return true;
+        if (await _uow.Commit(cancelationToken)) return true;
 
         await _mediator.RaiseEvent(new DomainNotification("Commit", "We had a problem during saving your data."));
         return false;
