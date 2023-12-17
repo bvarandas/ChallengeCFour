@@ -14,14 +14,14 @@ public class UnitOfWork : IUnitOfWork
         _logger = logger;
     }
 
-    public async Task<bool> Commit()
+    public async Task<bool> Commit(CancellationToken cancellationToken)
     {
         bool trySave = false;
         try
         {
             trySave = true;
             
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {

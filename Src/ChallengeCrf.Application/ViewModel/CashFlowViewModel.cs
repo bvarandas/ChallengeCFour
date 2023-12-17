@@ -41,13 +41,20 @@ public class CashFlowViewModel
     [ProtoMember(6)]
     public DateTime Date { get; set; }
 
-    public CashFlowViewModel(string cashFlowId, string description, double amount, string entry, DateTime date)
+    [MinLength(1)]
+    [MaxLength(10)]
+    [DisplayName("UserAction")]
+    [ProtoMember(7)]
+    public string UserAction { get; set; } = string.Empty;
+
+    public CashFlowViewModel(string cashFlowId, string description, double amount, string entry, DateTime date, string userAction)
     {
         CashFlowId = cashFlowId;
         Description = description;
         Amount = amount;
         Entry = entry;
         Date = date;
+        UserAction = userAction;
     }
 
     public CashFlowViewModel()

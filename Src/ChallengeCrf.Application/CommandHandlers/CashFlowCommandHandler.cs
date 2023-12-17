@@ -6,13 +6,15 @@ using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
+using FluentResults;
 
+[assembly: InternalsVisibleTo("ChallengeCrf.Tests")]
 namespace ChallengeCrf.Application.CommandHandlers;
-
-public class CashFlowCommandHandler : CommandHandler,
-    IRequestHandler<InsertCashFlowCommand, bool>,
-    IRequestHandler<UpdateCashFlowCommand, bool>,
-    IRequestHandler<RemoveCashFlowCommand, bool>
+public sealed class CashFlowCommandHandler : CommandHandler,
+    IRequestHandler<InsertCashFlowCommand, Result<bool>>,
+    IRequestHandler<UpdateCashFlowCommand, Result<bool>>,
+    IRequestHandler<RemoveCashFlowCommand, Result<bool>>
 {
     private readonly ICashFlowRepository _registerRepository;
     private readonly IMediatorHandler _mediator;
@@ -28,7 +30,7 @@ public class CashFlowCommandHandler : CommandHandler,
         _mediator = mediator;
     }
 
-    public async Task<bool> Handle(InsertCashFlowCommand command, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(InsertCashFlowCommand command, CancellationToken cancellationToken)
     {
         if (!command.IsValid())
         {
@@ -39,7 +41,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         _registerRepository.AddCashFlow(register);
 
-        if (await Commit())
+        if (await Commit(cancellationToken))
         {
             await _mediator.RaiseEvent(new CashFlowInsertedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date , register.Action));
         }
@@ -47,7 +49,7 @@ public class CashFlowCommandHandler : CommandHandler,
         return await Task.FromResult(true);
     }
 
-    public async Task<bool> Handle(UpdateCashFlowCommand command, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateCashFlowCommand command, CancellationToken cancellationToken)
     {
         if (!command.IsValid())
         {
@@ -58,7 +60,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         await _registerRepository.UpdateCashFlowAsync(register);
 
-        if (await Commit())
+        if (await Commit(cancellationToken))
         {
             await _mediator.RaiseEvent(new CashFlowUpdatedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date));
         }
@@ -66,7 +68,7 @@ public class CashFlowCommandHandler : CommandHandler,
         return await Task.FromResult(true);
     }
 
-    public async Task<bool> Handle(RemoveCashFlowCommand command, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(RemoveCashFlowCommand command, CancellationToken cancellationToken)
     {
         if (!command.IsValid())
         {
@@ -76,7 +78,7 @@ public class CashFlowCommandHandler : CommandHandler,
 
         _registerRepository.DeleteCashFlowAsync(command.CashFlowId);
 
-        if (await Commit())
+        if (await Commit(cancellationToken))
         {
             await _mediator.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
         }

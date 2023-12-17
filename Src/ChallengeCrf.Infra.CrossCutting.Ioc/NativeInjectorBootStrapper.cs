@@ -18,6 +18,7 @@ using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 
 using ChallengeCrf.Infra.Data.EventSourcing;
 using ChallengeCrf.Appplication.Interfaces;
+using FluentResults;
 
 namespace ChallengeCrf.Infra.CrossCutting.Ioc;
 
@@ -25,9 +26,6 @@ public class NativeInjectorBootStrapper
 {
     public static void RegisterServices(IServiceCollection services)
     {
-        // Asp .NET HttpContext dependency
-        //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        
         // Domain Bus (Mediator)
         services.AddSingleton<IMediatorHandler, InMemoryBus>();
 
@@ -43,9 +41,9 @@ public class NativeInjectorBootStrapper
         services.AddSingleton<INotificationHandler<CashFlowRemovedEvent>, RegisterEventHandler>();
 
         // Domain - Commands
-        services.AddSingleton<IRequestHandler<InsertCashFlowCommand, bool>, CashFlowCommandHandler>();
-        services.AddSingleton<IRequestHandler<UpdateCashFlowCommand, bool>, CashFlowCommandHandler>();
-        services.AddSingleton<IRequestHandler<RemoveCashFlowCommand, bool>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<InsertCashFlowCommand, Result<bool>>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<UpdateCashFlowCommand, Result<bool>>, CashFlowCommandHandler>();
+        services.AddSingleton<IRequestHandler<RemoveCashFlowCommand, Result<bool>>, CashFlowCommandHandler>();
 
         // Infra - Data
         services.AddSingleton<ICashFlowRepository, CashFlowRepository>();

@@ -13,6 +13,7 @@ using ChallengeCrf.Application.Interfaces;
 using Common.Logging.Correlation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
+using ChallengeCrf.Domain.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -45,7 +46,7 @@ app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer
 {
     try
     {
-        cash.Action = "insert";
+        cash.Action = UserAction.Insert;
         cash.Date = DateTime.Now;
         await queueProducer.PublishMessage(cash);
 
@@ -61,7 +62,7 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
 {
     try
     {
-        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now, "update");
+        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now, UserAction.Update);
         cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
         cash.cashFlowIdTemp = cashModel.CashFlowId;
         await queueProducer.PublishMessage(cash);
@@ -78,7 +79,7 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
 app.MapGet("api/cashflow/", async (IQueueProducer queueProducer, ILogger<Program> logger) => {
     try
     {
-        var cash = new CashFlow("",0,"",DateTime.Now, "getall") { Action = "getall" };
+        var cash = new CashFlow("",0,"",DateTime.Now, UserAction.GetAll) { Action = UserAction.GetAll};
         await queueProducer.PublishMessage(cash);
 
         return Results.Ok(null);
@@ -94,7 +95,7 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
 {
     try
     {
-        var cash = new CashFlow("", 0, "", DateTime.Now, "getall") 
+        var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.GetAll) 
         { 
             Action = "get", CashFlowId = id, cashFlowIdTemp= id , Id = new MongoDB.Bson.ObjectId(id) 
         };
@@ -110,9 +111,9 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
 });
 
 app.MapDelete("api/cashflow/{id}", async (IQueueProducer queueProducer, string id) => {
-    var cash = new CashFlow("", 0, "", DateTime.Now, "remove")
+    var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.Delete)
     {
-        Action = "remove",
+        Action = UserAction.Delete,
         CashFlowId = id,
         cashFlowIdTemp = id,
         Id = new MongoDB.Bson.ObjectId(id)
@@ -129,7 +130,7 @@ app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProduce
             return Results.BadRequest("Data inválida");
         }
 
-        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) { Action = "get" };
+        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) { Action = UserAction.Get };
 
         await queueProducer.PublishMessage(dailyConsolidated);
 
