@@ -15,19 +15,25 @@ public class CashFlowRepository: ICashFlowRepository
         _dbContext = dbContext;
         _logger = logger;
     }
-    public void AddCashFlow(CashFlow register)
+    public async Task<bool> AddCashFlow(CashFlow register)
     {
-        _logger.LogInformation("Inserindo no banco de dados");
+        _logger.LogInformation("Inserindo de CashFlow no banco de dados");
+        var ret = false;
         try
         {
-            _dbContext.CashFlow
-                .Add(register);
-        }catch (Exception ex) {
+             _dbContext.CashFlow.Add(register);
+            ret = true;
+        }catch (Exception ex) 
+        {
             _logger.LogError(ex.Message);
         }
+
+        return await Task.FromResult(ret);
     }
-    public async Task DeleteCashFlowAsync(string registerId)
+
+    public async Task<bool> DeleteCashFlowAsync(string registerId)
     {
+        var ret = false;
         try
         {
             var filtered = await _dbContext
@@ -35,9 +41,13 @@ public class CashFlowRepository: ICashFlowRepository
                 .ToAsyncEnumerable()
                 .SingleOrDefaultAsync(x => x.CashFlowId == registerId);
             _dbContext.CashFlow.Remove(filtered);
+
+            ret = true;
+
         }catch (Exception ex) {
             _logger.LogError(ex.Message);
         }
+        return await Task.FromResult(ret);
     }
     public async Task<IAsyncEnumerable<CashFlow>> GetAllCashFlowAsync()
     {
@@ -80,8 +90,9 @@ public class CashFlowRepository: ICashFlowRepository
         return registerResult;
     }
 
-    public async Task<CashFlow> UpdateCashFlowAsync(CashFlow register)
+    public async Task<bool> UpdateCashFlowAsync(CashFlow register)
     {
+        var ret = false;
         var local = _dbContext.CashFlow.
             AsNoTracking().
             FirstOrDefault(entry => 
@@ -91,7 +102,7 @@ public class CashFlowRepository: ICashFlowRepository
                         
         _dbContext.CashFlow.Update(register);
         
-        return await Task.FromResult(register);
+        return await Task.FromResult(ret);
     }
     public void Dispose()
     {

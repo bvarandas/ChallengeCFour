@@ -53,6 +53,7 @@ public  class CashFlowService : ICashFlowService
     public async Task AddCashFlowAsync(CashFlowCommand register)
     {
         _logger.LogInformation("Tentando inserir no banco de dados");
+
         var addCommand = _mapper.Map<InsertCashFlowCommand>(register);
         await _mediator.SendCommand(addCommand);
     }
