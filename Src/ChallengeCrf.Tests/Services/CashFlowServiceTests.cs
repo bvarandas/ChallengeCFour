@@ -54,10 +54,11 @@ public class CashFlowServiceTests
     }
 
     [Fact]
-    public void AddCashFlowAsync_InsertNull()
+    public async void AddCashFlowAsync_InsertNull()
     {
-        var cashFlow = new InsertCashFlowCommand("total recall insert", 55.66, "Debito", DateTime.Now);
-        var result = cashFlowService.AddCashFlowAsync(cashFlow);
+        //var cashFlow = new InsertCashFlowCommand("total recall insert", 55.66, "Debito", DateTime.Now);
+        InsertCashFlowCommand cashFlow = null;
+        var result =  cashFlowService.AddCashFlowAsync(cashFlow);
         Assert.Null(result);
     }
 
