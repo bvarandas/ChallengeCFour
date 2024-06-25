@@ -20,6 +20,10 @@ Command
 Mediator 
 
 Mais
+Command
+
+Domain Notification
+
 Ioc - Inversão de controle
 
 CQRS - com Coreografia
