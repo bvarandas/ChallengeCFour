@@ -110,15 +110,26 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
     }
 });
 
-app.MapDelete("api/cashflow/{id}", async (IQueueProducer queueProducer, string id) => {
-    var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.Delete)
+app.MapDelete("api/cashflow/{id}", async (string id, IQueueProducer queueProducer,  ILogger<Program> logger) => 
+{
+    try
     {
-        Action = UserAction.Delete,
-        CashFlowId = id,
-        cashFlowIdTemp = id,
-        Id = new MongoDB.Bson.ObjectId(id)
-    };
-    await queueProducer.PublishMessage(cash);
+        var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.Delete)
+        {
+            Action = UserAction.Delete,
+            CashFlowId = id,
+            cashFlowIdTemp = id,
+            Id = new MongoDB.Bson.ObjectId(id)
+        };
+        await queueProducer.PublishMessage(cash);
+
+        return Results.Ok(null);
+
+    }catch(Exception ex)
+    {
+        logger.LogError(ex, $"{ex.Message}");
+        return Results.BadRequest(ex);
+    }
 });
 
 app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProducer queueProducer, ILogger<Program> logger) => 

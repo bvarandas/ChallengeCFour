@@ -25,7 +25,6 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             builder.Sources.Clear();
             builder.AddConfiguration(config);
-
         })
         .UseSerilog(Logging.ConfigureLogger)
         .ConfigureServices(services =>
@@ -58,6 +57,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             NativeInjectorBootStrapper.RegisterServices(services);
 
         }).Build();
+
 
     await host
     .RunAsync();

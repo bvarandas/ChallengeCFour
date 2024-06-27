@@ -27,7 +27,7 @@
     },
     //CashFLow API
     {
-      "DownstreamPathTemplate": "api/cashflow/",
+      "DownstreamPathTemplate": "api/cashflow/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -35,7 +35,20 @@
           "Port": "5200"
         }
       ],
-      "UpstreamPathTemplate": "api/cashflow/",
+      "UpstreamPathTemplate": "api/cashflow/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    {
+      "DownstreamPathTemplate": "api/cashflow",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "5200"
+        }
+      ],
+      "UpstreamPathTemplate": "api/cashflow",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT" ],
       "FileCacheOptions": { "TtlSeconds": 30 }
     },
