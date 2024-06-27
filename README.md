@@ -39,12 +39,28 @@ Alguns conceitos de solid tbm foram usados.
 
 Instruções para rodar
 
-De dentro da pasta do projeto ChallengeCrf rodar :
+Setar o visual Studio para rodar o docker compose
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/f291af70-68bf-4391-9af9-b83890a04676)
 
-kind create cluster
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/88e23b2b-814c-4e3e-a182-b8075c4e2234)
 
-kubectl apply -f .
+F5
 
+Irá subir os seguintes containers
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/d4553f77-03b2-4128-b6c1-31221a0b52ef)
+
+
+
+Na visual studio Code, entrar na pasta 
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/2925361b-7de8-4b1b-b632-806a4d31d1e8)
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/9b7e4af0-b126-4ffa-a91c-231fcb563313)
+
+Abrir um terminal e digitar ng serve
+
+Acessar no navegador http://localhost:4200/
 
 
 Irá subir os containers de:
@@ -55,11 +71,6 @@ challengecrf.queue - Worker para Producer e consumer para o serviço
 angularcontainer - Front End em angular para efetuar o cadastro. http//localhost:4200/cashflow
 
 Modelo da arquitetura C4
-
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/29aeeb46-4fe7-4632-961d-26ba4b5881cd)
-
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/719581d1-c4a5-429b-8a9e-44ece8ccb475)
-
 
 ![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/b99b25a9-6302-4a65-af4e-0f6af976e668)
 
