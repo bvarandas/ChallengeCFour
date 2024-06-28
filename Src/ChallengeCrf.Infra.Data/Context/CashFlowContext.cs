@@ -1,4 +1,5 @@
 ﻿using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.ValueObjects;
 using MongoDB.Driver;
 using MongoFramework;
 namespace ChallengeCrf.Infra.Data.Context;

@@ -29,9 +29,6 @@ public sealed class DailyConsolidated
     [ProtoMember(6)]
     public IEnumerable<CashFlow> CashFlows { get; set; }
 
-    [ProtoMember(7)]
-    public string Action { get; set; }
-
     public DailyConsolidated()
     {
     }

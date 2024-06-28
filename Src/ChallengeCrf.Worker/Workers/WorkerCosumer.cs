@@ -10,19 +10,20 @@ using ChallengeCrf.Appplication.Interfaces;
 using AutoMapper;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.ViewModel;
+using ChallengeCrf.Domain.ValueObjects;
 
 namespace ChallengeCrf.Queue.Worker.Workers;
 
 public class WorkerConsumer : BackgroundService, IWorkerConsumer
 {
-    private readonly IWorkerProducer _workerProducer;
-    private readonly ICashFlowService _flowService;
+    private IWorkerProducer _workerProducer;
+    private ICashFlowService _flowService;
     private readonly IDailyConsolidatedService _dailyConsolidatedService;
     private readonly ILogger<WorkerConsumer> _logger;
     private readonly QueueCommandSettings _queueSettings;
-    private readonly ConnectionFactory _factory;
-    private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private ConnectionFactory _factory;
+    private IConnection _connection;
+    private IModel _channel;
     private readonly ConcurrentQueue<CashFlow> _queueRegister;
     private readonly IMapper _mapper;
     public WorkerConsumer(IOptions<QueueCommandSettings> queueSettings, 
@@ -36,9 +37,14 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         _queueSettings = queueSettings.Value;
         _dailyConsolidatedService = dailyConsolidatedService;
         _mapper = mapper;
-
+        _queueRegister = new ConcurrentQueue<CashFlow>();
+        _flowService = registerService;
+        _workerProducer = workerProducer;
+    }
+    public override Task StartAsync(CancellationToken stoppingToken)
+    {
         _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
-        
+
         _factory = new ConnectionFactory()
         {
             HostName = _queueSettings.HostName,
@@ -46,10 +52,10 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         };
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-        
+
         _channel.QueueDeclare(_queueSettings.QueueNameCashFlow,
-            durable: true, 
-            exclusive: false, 
+            durable: true,
+            exclusive: false,
             autoDelete: false);
 
         _channel.QueueDeclare(_queueSettings.QueueNameDailyConsolidated,
@@ -57,13 +63,6 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
             exclusive: false,
             autoDelete: false);
 
-        _flowService = registerService;
-        _workerProducer = workerProducer;
-        _queueRegister = new ConcurrentQueue<CashFlow>();
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
         _logger.LogInformation("Aguardando mensagens Command...");
 
         var consumerCashFlow = new EventingBasicConsumer(_channel);
@@ -75,10 +74,12 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         _channel.BasicConsume(queue: _queueSettings.QueueNameCashFlow, autoAck: false, consumer: consumerCashFlow);
         _channel.BasicConsume(queue: _queueSettings.QueueNameDailyConsolidated, autoAck: false, consumer: consumerDailyConsolidated);
 
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await Task.Delay(_queueSettings.Interval, stoppingToken);
-        }
+        return Task.CompletedTask;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        return Task.CompletedTask;
     }
 
     private async void ConsumerDailyConsolidated_Received(object? sender, BasicDeliverEventArgs e)
@@ -86,19 +87,18 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         try
         {
             _logger.LogInformation("Chegou nova mensagem no Worker Consumer");
-            var message = e.Body.ToArray().DeserializeFromByteArrayProtobuf<DailyConsolidated>();
+            var message = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<DailyConsolidated>>();
             _logger.LogInformation("Conseguiu Deserializar a mensagem");
 
             switch (message.Action)
             {
                 case "get":
-                    var dailyConsolidated = await _dailyConsolidatedService.GetDailyConsolidatedByDateAsync(message.Date);
+                    var dailyConsolidated = await _dailyConsolidatedService.GetDailyConsolidatedByDateAsync(message.Body.Date);
                     var list = new List<DailyConsolidated>();
-                    if (dailyConsolidated is not null)
-                    {
-                        //list.Add(dailyConsolidated);
-                        await WorkerProducer._Singleton.PublishMessages(dailyConsolidated);
-                    }
+                    
+                    if (dailyConsolidated.IsSuccess)
+                        await WorkerProducer._Singleton.PublishMessages(dailyConsolidated.Value);
+                    
                 break;
             }
 
@@ -118,13 +118,14 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
         try
         {
             _logger.LogInformation("Chegou nova mensagem no Worker Consumer");
-            var message = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
+            var messageEnvelope = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<CashFlow>>();
+            var message = messageEnvelope.Body;
             _logger.LogInformation("Conseguiu Deserializar a mensagem");
-            _logger.LogInformation($"{message.Description} | {message.Amount}| {message.Entry} | {message.Date} | {message.Action}");
+            _logger.LogInformation($"{message.Description} | {message.Amount}| {message.Entry} | {message.Date} | {messageEnvelope.Action}");
 
             _queueRegister.Enqueue(message);
 
-            switch(message.Action)
+            switch(messageEnvelope.Action)
             {
                 case "insert":
                     var commandInsert = _mapper.Map<CashFlow, InsertCashFlowCommand>(message);

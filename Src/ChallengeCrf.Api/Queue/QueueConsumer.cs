@@ -4,12 +4,12 @@ using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Collections.Generic;
 
 namespace ChallengeCrf.Api.Producer;
 
@@ -92,7 +92,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
                 var hubContext = scope.ServiceProvider
                     .GetRequiredService<IHubContext<BrokerHub>>();
 
-                await hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessageDC", message);
+                await hubContext.Clients.Groups("CrudMessage").SendAsync("ReceiveMessageDC", message);
             }
 
             _channel.BasicAck(e.DeliveryTag, false);
@@ -126,9 +126,9 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
                 messageList.ForEach(mess => {
                     _flows.TryAdd(mess.CashFlowId, mess);
                 });
-                
-                
-                await hubContext.Clients.Group("CrudMessage").SendAsync("ReceiveMessageCF", messageList);
+
+
+                await hubContext.Clients.Groups("CrudMessage").SendAsync("ReceiveMessageCF", messageList);
             }
 
             _channel.BasicAck(e.DeliveryTag, false);
@@ -136,12 +136,16 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         catch (Exception ex)
         {
             _logger.LogError(ex.Message,ex);
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
-            if (messageList is CashFlow)
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlowViewModel>>>();
+            var oType = messageList.GetType();
+
+            if (oType.IsGenericType && 
+                oType.GetGenericTypeDefinition() == typeof(List<CashFlowViewModel>))
             {
                 _channel.BasicAck(e.DeliveryTag, false);
-            }else
-               _channel.BasicNack(e.DeliveryTag, false, true);
+            }else{
+                _channel.BasicNack(e.DeliveryTag, false, true);
+            }
         }
     }
 }

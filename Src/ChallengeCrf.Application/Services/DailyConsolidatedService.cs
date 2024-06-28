@@ -4,8 +4,9 @@ using ChallengeCrf.Appplication.Interfaces;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-
+using FluentResults;
 
 namespace ChallengeCrf.Application.Services;
 public class DailyConsolidatedService : IDailyConsolidatedService
@@ -30,7 +31,7 @@ public class DailyConsolidatedService : IDailyConsolidatedService
         _mediator = mediator;
     }
 
-    public async Task<DailyConsolidated> GetDailyConsolidatedByDateAsync(DateTime date)
+    public async Task<Result<DailyConsolidated>> GetDailyConsolidatedByDateAsync(DateTime date)
     {
         return await _dailyConsolidatedRepository.GetDailyConsolidatedByDateAsync(date);
     }
@@ -46,37 +47,46 @@ public class DailyConsolidatedService : IDailyConsolidatedService
     public async Task GenerateReportDailyConsolidated(CancellationToken stoppingToken)
     {
         var listCashFlow = await _cashFlowRepository.GetCashFlowByDateAsync(DateTime.Now);
-
-        if (await listCashFlow.AnyAsync(stoppingToken))
-        {
-            var amountDebit = listCashFlow
-                .Where(x => x.Entry == "Debito")
-                .SumAsync(x => x.Amount);
-
-            var amountCredit = listCashFlow
-                .Where(x => x.Entry == "Credito")
-                .SumAsync(x => x.Amount);
-
-            var amountTotal = amountCredit.Result - amountDebit.Result;
-
-            var dailyConsolidated = new DailyConsolidated("", amountCredit.Result, amountDebit.Result, amountTotal, DateTime.Now, listCashFlow.ToEnumerable());
-            var hasDailyConsolidated = await _dailyConsolidatedRepository.GetDailyConsolidatedByDateAsync(DateTime.Now);
-            
-            if (hasDailyConsolidated is not null)
+        
+        if (listCashFlow.IsSuccess)
+            if (await listCashFlow.Value.AnyAsync(stoppingToken))
             {
-                dailyConsolidated.Id = hasDailyConsolidated.Id;
-                dailyConsolidated.DailyConsolidatedId = hasDailyConsolidated.Id.ToString();
-                await _dailyConsolidatedRepository.UpdateDailyConsolidatedAsync(dailyConsolidated);
-            }else
-            {
-                await _dailyConsolidatedRepository.AddDailyConsolidatedAsync(dailyConsolidated);
+                var amountDebit = listCashFlow
+                    .Value
+                    .Where(x => x.Entry == "Debito")
+                    .SumAsync(x => x.Amount);
+
+                var amountCredit = listCashFlow
+                    .Value
+                    .Where(x => x.Entry == "Credito")
+                    .SumAsync(x => x.Amount);
+
+                var amountTotal = amountCredit.Result - amountDebit.Result;
+
+                var listCashFlowTemp = new List<CashFlow>();
+                await listCashFlow.Value.ForEachAsync(e => {
+                    listCashFlowTemp.Add(e);
+                });
+                
+                var dailyConsolidated = new DailyConsolidated("", amountCredit.Result, amountDebit.Result, amountTotal, DateTime.Now, listCashFlowTemp);
+                var hasDailyConsolidated = await _dailyConsolidatedRepository.GetDailyConsolidatedByDateAsync(DateTime.Now);
+
+                if (hasDailyConsolidated.IsSuccess && hasDailyConsolidated.Value is not null)
+                {
+                    dailyConsolidated.Id = hasDailyConsolidated.Value.Id;
+                    dailyConsolidated.DailyConsolidatedId = hasDailyConsolidated.Value.Id.ToString();
+                    
+                    await _dailyConsolidatedRepository.UpdateDailyConsolidatedAsync(dailyConsolidated);
+                }else
+                {
+                    await _dailyConsolidatedRepository.AddDailyConsolidatedAsync(dailyConsolidated);
+                }
+                _logger.LogInformation("Relatório DIário consolidado gerado com sucesso");
             }
-            _logger.LogInformation("Relatório DIário consolidado gerado com sucesso");
-        }
-        else
-        {
-            _logger.LogInformation("Não há movimento para gerar relatório de movimento consolidado");
-            return;
-        }
+            else
+            {
+                _logger.LogInformation("Não há movimento para gerar relatório de movimento consolidado");
+                return;
+            }
     }
 }
