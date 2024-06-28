@@ -25,9 +25,9 @@ export class AppComponent {
     this._compDC = compDC;
     this._compCF = compCF;
     this.CreateConnection();
-    setTimeout(() => { this.connectToMessageBroker();}, 2000);
+    //setTimeout(() => { this.connectToMessageBroker();}, 2000);
     //setTimeout(() => { this.startConnection();}, 2000);
-    //this.startConnection();
+    this.startConnection();
   }
 
   private CreateConnection(){
@@ -35,18 +35,6 @@ export class AppComponent {
     this._hubConnection = new HubConnectionBuilder()
                               .withUrl("http://localhost:9010/hubs/brokerhub")
                               .build();
-    this._hubConnection
-    .start()
-    .then(()=> {
-      console.log('Hub connection started');
-      //this.connectToMessageBroker();
-      
-      
-    })
-    .catch(()=> {
-      setTimeout(() => { this.startConnection();}, 5000);
-    });
-                                  
 
     this._hubConnection.on('ReceiveMessageCF', 
       (data: CashFlow[])=> 
@@ -59,16 +47,23 @@ export class AppComponent {
       { 
         this.dailyConsolidated = data; 
       });
-    
-    this._hubConnection.invoke('ConnectToMessageBroker');
   }
 
   private startConnection() : void {
-    
+    this._hubConnection
+    .start()
+    .then(()=> {
+      console.log('Hub connection started');
+      this.connectToMessageBroker();
+    })
+    .catch(()=> {
+      setTimeout(() => { this.startConnection();}, 5000);
+    });
   }
   connectToMessageBroker()
   {
-    this._compDC.GetInitial();
-    this._compCF.GetInitial();
+    this._hubConnection.invoke('ConnectToMessageBroker');
+    // this._compDC.GetInitial();
+    // this._compCF.GetInitial();
   }
 }

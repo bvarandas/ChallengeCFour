@@ -102,7 +102,7 @@ export class CashflowComponent {
         this.visibilidadeFormulario = false;
         alert("Lançamento enviado com sucesso");
         this.cashflowService.GetAll().subscribe((registros)=>{
-          this.cashflows = registros;
+          //this.cashflows = registros;
         });
       });
     }
@@ -113,7 +113,7 @@ export class CashflowComponent {
         this.visibilidadeFormulario = false;
           alert("Lançamento enviado com sucesso");
           this.cashflowService.GetAll().subscribe((registros)=>{
-            this.cashflows = registros;
+            //this.cashflows = registros;
           });
         }
       );

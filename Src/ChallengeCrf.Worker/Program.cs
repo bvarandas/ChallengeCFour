@@ -34,6 +34,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
             //services.AddSingleton<IWorkerConsumer, WorkerConsumer>();
 
+            services.AddHostedService<WorkerMessage>();
             services.AddHostedService<WorkerConsumer>();
             services.AddHostedService<WorkerDailyConsolidated>();
 
