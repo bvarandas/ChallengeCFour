@@ -1,5 +1,5 @@
 # ChallengeCrf
-Projeto de desafio porposto para teste.
+Projeto proposto para desafio.
 
 Projeto se propoe a fazer um crud com patterns de mercado e mecanismos usados em soluções no mercado de capitais, 
 como mesageria e bibliotecas de compressão de dados para camada de transporte como protobuf.
