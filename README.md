@@ -11,6 +11,12 @@ Usando  Filas do RabbiMQ para coreografia do ambiente.
 Protobuf para compactação na camada de transporte.
 SignalR no response do para o client/Angular.
 
+
+Modelo da arquitetura C4
+
+![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/b99b25a9-6302-4a65-af4e-0f6af976e668)
+
+
 Padrões Criacionais usados:
 Factory
 Singleton
@@ -35,6 +41,10 @@ Unit of Work
 Event Sourcing (removido)
 
 Alguns conceitos de solid tbm foram usados.
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/765b8d2e-0ea2-4ee3-a30c-b0ef5e55f36e)
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/1d6c8ed2-35fe-4f59-8778-28b585246803)
 
 
 Instruções para rodar
@@ -70,8 +80,5 @@ challengecrf.api - Api de requisições para Controle de lançamentos e consolid
 challengecrf.queue - Worker para Producer e consumer para o serviço 
 angularcontainer - Front End em angular para efetuar o cadastro. http//localhost:4200/cashflow
 
-Modelo da arquitetura C4
-
-![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/b99b25a9-6302-4a65-af4e-0f6af976e668)
 
 
