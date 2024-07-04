@@ -1,21 +1,37 @@
 # ChallengeCrf
 Projeto proposto para desafio.
+---
 
-Projeto se propoe a fazer um crud com patterns de mercado e mecanismos usados em soluções no mercado de capitais, 
-como mesageria e bibliotecas de compressão de dados para camada de transporte como protobuf.
+Projeto se propoe a fazer um CRUD com patterns de mercado e mecanismos usados em soluções no mercado de capitais.
+
+Requisito arquitetural relevantes: 
+* O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
+* O serviço recebe 500 requisições por segundos, com no máximo 5% de perda de requisições
+
+---
+
+A escolha por essa arquitetura de mensageria foi efetuada pelos requisitos arquiteturais prpostos no desafio.
 
 Arquitetura - Message/Event Driven e alguns elementos de Clean Architecture.
-Command-> Event
-Query-> Reply
-Usando  Filas do RabbiMQ para coreografia do ambiente.
-Protobuf para compactação na camada de transporte.
-SignalR no response do para o client/Angular.
+* Command-> Event
+* Query-> Reply
 
+Usando  Filas do RabbiMQ para coreografia do ambiente - Importante na quantidade de mensagens (recebimento e entrega), e também inportante na alta disponibilidade e resiliência da entrega, pois foi implementado, Ack e NAck no consumer.
+
+Protobuf para compactação na camada de transporte entre serviços - Importante na compactação das mensagens para transporte e para mensagens 
+
+SignalR no response do para o client/Angular.(Tela)
+
+
+
+---
 
 Modelo da arquitetura C4
 
-![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/b99b25a9-6302-4a65-af4e-0f6af976e668)
 
+![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/2b8261fd-794a-453e-b73a-0c254ee3d5d6)
+
+---
 
 Padrões Criacionais usados:
 Factory
