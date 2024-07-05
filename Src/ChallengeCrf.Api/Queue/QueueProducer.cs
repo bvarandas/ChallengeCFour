@@ -3,6 +3,7 @@ using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Options;
 using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Domain.ValueObjects;
 
 namespace ChallengeCrf.Api.Producer;
 
@@ -52,11 +53,11 @@ public class QueueProducer : BackgroundService, IQueueProducer
         }
     }
 
-    public Task PublishMessage(CashFlow message)
+    public Task PublishMessageAsync(EnvelopeMessage<CashFlow> message)
     {
         try
         {
-            _logger.LogInformation($"QueueProducer - Enviando mensagem nova {message.Description}");
+            _logger.LogInformation($"QueueProducer - Enviando mensagem nova {message.Body.Description}");
             
             var body = message.SerializeToByteArrayProtobuf();
 
@@ -77,7 +78,7 @@ public class QueueProducer : BackgroundService, IQueueProducer
         }
     }
 
-    public Task PublishMessage(DailyConsolidated message)
+    public Task PublishMessageAsync(EnvelopeMessage<DailyConsolidated> message)
     {
         try
         {

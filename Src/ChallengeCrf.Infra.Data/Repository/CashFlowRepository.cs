@@ -4,6 +4,8 @@ using ChallengeCrf.Infra.Data.Context;
 using MongoFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using FluentResults;
+using ChallengeCrf.Domain.ValueObjects;
 
 namespace ChallengeCrf.Infra.Data.Repository;
 public class CashFlowRepository: ICashFlowRepository
@@ -15,48 +17,46 @@ public class CashFlowRepository: ICashFlowRepository
         _dbContext = dbContext;
         _logger = logger;
     }
-    public async Task<bool> AddCashFlow(CashFlow register)
+    public async Task<Result> AddCashFlowAsync(CashFlow cashFlow)
     {
         _logger.LogInformation("Inserindo de CashFlow no banco de dados");
-        var ret = false;
+        
         try
         {
-             _dbContext.CashFlow.Add(register);
-            ret = true;
+             _dbContext.CashFlow.Add(cashFlow);
+            
         }catch (Exception ex) 
         {
             _logger.LogError(ex.Message);
+            return Result.Fail(new Error(ex.Message));
         }
 
-        return await Task.FromResult(ret);
+        return Result.Ok();
     }
 
-    public async Task<bool> DeleteCashFlowAsync(string registerId)
+    public async Task<Result> DeleteCashFlowAsync(string cashFlowId)
     {
-        var ret = false;
         try
         {
             var filtered = await _dbContext
                 .CashFlow
                 .ToAsyncEnumerable()
-                .SingleOrDefaultAsync(x => x.CashFlowId == registerId);
+                .SingleOrDefaultAsync(x => x.CashFlowId == cashFlowId);
             _dbContext.CashFlow.Remove(filtered);
-
-            ret = true;
-
         }catch (Exception ex) {
             _logger.LogError(ex.Message);
+            return Result.Fail(new Error(ex.Message));
         }
-        return await Task.FromResult(ret);
+        return Result.Ok();
     }
-    public async Task<IAsyncEnumerable<CashFlow>> GetAllCashFlowAsync()
+    public async Task<Result<IAsyncEnumerable<CashFlow>>> GetAllCashFlowAsync()
     {
         IAsyncEnumerable<CashFlow>? registerList = null;
         try
         {
             _logger.LogInformation("Coletando  GetAllCashFlowAsync no MongoDB");
             
-            registerList = _dbContext.CashFlow
+            registerList =  _dbContext.CashFlow
                 .AsNoTracking()
                 .ToAsyncEnumerable();
 
@@ -65,21 +65,21 @@ public class CashFlowRepository: ICashFlowRepository
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
+            return Result.Fail(new Error(ex.Message));
         }
-        return registerList;
-
+        return Result.Ok(registerList);
     }
-    public async Task<CashFlow> GetCashFlowByIDAsync(string cashFlowId)
+    public async Task<Result<CashFlow>> GetCashFlowByIDAsync(string cashFlowId)
     {
         var registerResult = await _dbContext
             .CashFlow
             .ToAsyncEnumerable()
             .SingleOrDefaultAsync(x => x.CashFlowId == cashFlowId);
-            
-        return registerResult;
+
+        return Result.Ok(registerResult);
     }
 
-    public async Task<IAsyncEnumerable<CashFlow>> GetCashFlowByDateAsync(DateTime date)
+    public async Task<Result<IAsyncEnumerable<CashFlow>>> GetCashFlowByDateAsync(DateTime date)
     {
         var registerResult = _dbContext
             .CashFlow
@@ -87,26 +87,32 @@ public class CashFlowRepository: ICashFlowRepository
             .ToAsyncEnumerable()
             .Where(x => x.Date.ToString("dd/MM/yyyy") == date.ToString("dd/MM/yyyy"));
         
-        return registerResult;
+        return Result.Ok(registerResult);
     }
 
-    public async Task<bool> UpdateCashFlowAsync(CashFlow register)
+    public async Task<Result> UpdateCashFlowAsync(CashFlow cashFlow)
     {
-        var ret = false;
-        var local = _dbContext.CashFlow.
-            AsNoTracking().
-            FirstOrDefault(entry => 
-                entry
-                .CashFlowId
-                .Equals(register.CashFlowId));
-                        
-        _dbContext.CashFlow.Update(register);
-        
-        return await Task.FromResult(ret);
+        try
+        {
+            var local = _dbContext.CashFlow.
+                AsNoTracking().
+                FirstOrDefault(entry =>
+                    entry
+                    .CashFlowId
+                    .Equals(cashFlow.CashFlowId));
+
+            _dbContext.CashFlow.Update(cashFlow);
+        }catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Result.Fail(new Error(ex.Message));
+        }
+        return Result.Ok();
     }
     public void Dispose()
     {
         _dbContext.Dispose();
         GC.SuppressFinalize(this);
     }
+
 }

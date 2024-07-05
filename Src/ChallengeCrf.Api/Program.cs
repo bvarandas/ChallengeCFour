@@ -14,6 +14,8 @@ using Common.Logging.Correlation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using ChallengeCrf.Domain.Constants;
+using ChallengeCrf.Domain.ValueObjects;
+using System.Security.Policy;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -46,9 +48,12 @@ app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer
 {
     try
     {
-        cash.Action = UserAction.Insert;
+        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+        envelopeMessage.Action = UserAction.Insert;
+        envelopeMessage.LastTransaction = DateTime.Now;
         cash.Date = DateTime.Now;
-        await queueProducer.PublishMessage(cash);
+        
+        await queueProducer.PublishMessageAsync(envelopeMessage);
 
         return Results.Accepted(null,cash);
     }
@@ -62,10 +67,15 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
 {
     try
     {
-        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now, UserAction.Update);
+        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now);
+        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+        envelopeMessage.Action = UserAction.Update;
+        envelopeMessage.LastTransaction = DateTime.Now;
+
         cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
         cash.cashFlowIdTemp = cashModel.CashFlowId;
-        await queueProducer.PublishMessage(cash);
+        
+        await queueProducer.PublishMessageAsync(envelopeMessage);
 
         return Results.Accepted(null, cash);
     }
@@ -79,8 +89,11 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
 app.MapGet("api/cashflow/", async (IQueueProducer queueProducer, ILogger<Program> logger) => {
     try
     {
-        var cash = new CashFlow("",0,"",DateTime.Now, UserAction.GetAll) { Action = UserAction.GetAll};
-        await queueProducer.PublishMessage(cash);
+        var cash = new CashFlow("",0,"",DateTime.Now);
+        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+        envelopeMessage.Action = UserAction.GetAll;
+
+        await queueProducer.PublishMessageAsync(envelopeMessage);
 
         return Results.Ok(null);
     }
@@ -95,11 +108,15 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
 {
     try
     {
-        var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.GetAll) 
+        var cash = new CashFlow("", 0, "", DateTime.Now) 
         { 
-            Action = "get", CashFlowId = id, cashFlowIdTemp= id , Id = new MongoDB.Bson.ObjectId(id) 
+            CashFlowId = id, cashFlowIdTemp= id , Id = new MongoDB.Bson.ObjectId(id) 
         };
-        await queueProducer.PublishMessage(cash);
+
+        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+        envelopeMessage.Action = UserAction.Get;
+
+        await queueProducer.PublishMessageAsync(envelopeMessage);
 
         return Results.Ok(null);
     }
@@ -110,15 +127,29 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
     }
 });
 
-app.MapDelete("api/cashflow/{id}", async (IQueueProducer queueProducer, string id) => {
-    var cash = new CashFlow("", 0, "", DateTime.Now, UserAction.Delete)
+app.MapDelete("api/cashflow/{id}", async (string id, IQueueProducer queueProducer,  ILogger<Program> logger) => 
+{
+    try
     {
-        Action = UserAction.Delete,
-        CashFlowId = id,
-        cashFlowIdTemp = id,
-        Id = new MongoDB.Bson.ObjectId(id)
-    };
-    await queueProducer.PublishMessage(cash);
+        var cash = new CashFlow("", 0, "", DateTime.Now)
+        {
+            CashFlowId = id,
+            cashFlowIdTemp = id,
+            Id = new MongoDB.Bson.ObjectId(id)
+        };
+        
+        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+        envelopeMessage.Action = UserAction.Delete;
+
+        await queueProducer.PublishMessageAsync(envelopeMessage);
+
+        return Results.Ok(null);
+
+    }catch(Exception ex)
+    {
+        logger.LogError(ex, $"{ex.Message}");
+        return Results.BadRequest(ex);
+    }
 });
 
 app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProducer queueProducer, ILogger<Program> logger) => 
@@ -130,9 +161,13 @@ app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProduce
             return Results.BadRequest("Data inválida");
         }
 
-        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) { Action = UserAction.Get };
+        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) ;
 
-        await queueProducer.PublishMessage(dailyConsolidated);
+        var envelopeMessage = new EnvelopeMessage<DailyConsolidated>(dailyConsolidated);
+        envelopeMessage.Action = UserAction.Get;
+
+        await queueProducer.PublishMessageAsync(envelopeMessage);
+
 
         return Results.Ok(null);
     }

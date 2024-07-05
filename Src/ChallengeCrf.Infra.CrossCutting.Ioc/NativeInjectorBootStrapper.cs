@@ -19,6 +19,7 @@ using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using ChallengeCrf.Infra.Data.EventSourcing;
 using ChallengeCrf.Appplication.Interfaces;
 using FluentResults;
+using ChallengeCrf.Infra.CrossCutting.Middleware;
 
 namespace ChallengeCrf.Infra.CrossCutting.Ioc;
 
@@ -28,6 +29,10 @@ public class NativeInjectorBootStrapper
     {
         // Domain Bus (Mediator)
         services.AddSingleton<IMediatorHandler, InMemoryBus>();
+
+        // Middleware
+        //services.AddSingleton<ConfigurationGlobalException>(options => options.);
+        //services.AddSingleton<ConfigurationGlobalException>(opt => opt.);
 
         // Application
         services.AddSingleton<ICashFlowService, CashFlowService>();

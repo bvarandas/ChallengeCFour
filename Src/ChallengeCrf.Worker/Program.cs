@@ -25,7 +25,6 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             builder.Sources.Clear();
             builder.AddConfiguration(config);
-
         })
         .UseSerilog(Logging.ConfigureLogger)
         .ConfigureServices(services =>
@@ -35,6 +34,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
             //services.AddSingleton<IWorkerConsumer, WorkerConsumer>();
 
+            services.AddHostedService<WorkerMessage>();
             services.AddHostedService<WorkerConsumer>();
             services.AddHostedService<WorkerDailyConsolidated>();
 
@@ -58,6 +58,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             NativeInjectorBootStrapper.RegisterServices(services);
 
         }).Build();
+
 
     await host
     .RunAsync();

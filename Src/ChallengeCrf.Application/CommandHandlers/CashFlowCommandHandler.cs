@@ -18,7 +18,6 @@ public sealed class CashFlowCommandHandler : CommandHandler,
 {
     private readonly ICashFlowRepository _registerRepository;
     private readonly IMediatorHandler _mediator;
-
     public CashFlowCommandHandler(
         ICashFlowRepository registerRepository,
         IUnitOfWork uow,
@@ -37,13 +36,13 @@ public sealed class CashFlowCommandHandler : CommandHandler,
             NotifyValidationErrors(command);
             return await Task.FromResult(false);
         }
-        var register = new CashFlow(command.Description, command.Amount, command.Entry, command.Date, command.Action);
+        var cashFlow = new CashFlow(command.Description, command.Amount, command.Entry, command.Date);
 
-        _registerRepository.AddCashFlow(register);
+        await _registerRepository.AddCashFlowAsync(cashFlow);
 
         if (await Commit(cancellationToken))
         {
-            await _mediator.RaiseEvent(new CashFlowInsertedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date , register.Action));
+            await _mediator.RaiseEvent(new CashFlowInsertedEvent(cashFlow.CashFlowId, cashFlow.Description, cashFlow.Amount, cashFlow.Entry, cashFlow.Date, command.Action ));
         }
 
         return await Task.FromResult(true);
@@ -56,13 +55,13 @@ public sealed class CashFlowCommandHandler : CommandHandler,
             NotifyValidationErrors(command);
             return await Task.FromResult(false);
         }
-        var register = new CashFlow(command.CashFlowId, command.CashFlowId, command.Description, command.Amount,command.Entry, command.Date, command.Action);
+        var cashFlow = new CashFlow(command.CashFlowId, command.CashFlowId, command.Description, command.Amount,command.Entry, command.Date);
 
-        await _registerRepository.UpdateCashFlowAsync(register);
+        await _registerRepository.UpdateCashFlowAsync(cashFlow);
 
         if (await Commit(cancellationToken))
         {
-            await _mediator.RaiseEvent(new CashFlowUpdatedEvent(register.CashFlowId, register.Description, register.Amount, register.Entry, register.Date));
+            await _mediator.RaiseEvent(new CashFlowUpdatedEvent(cashFlow.CashFlowId, cashFlow.Description, cashFlow.Amount, cashFlow.Entry, cashFlow.Date));
         }
 
         return await Task.FromResult(true);

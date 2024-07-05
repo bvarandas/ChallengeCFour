@@ -24,13 +24,13 @@ public abstract class CashFlowValidation<T> : AbstractValidator<T> where T : Cas
         RuleFor(c => c.Amount)
             .NotEqual(0)
             .WithMessage("É necessário inserir um valor válido!")
-            .LessThan(0)
+            .GreaterThan(0)
             .WithMessage("É necessário inserir um valor positivo!");
     }
 
     protected void ValidateCashDirection()
     {
-        RuleFor(c => c.Entry)
+        RuleFor(c => c.Entry.ToLower())
             .NotEmpty().WithMessage("É necessário inserir o Lançamento!")
             .Must(IsValidEntry)
             .WithMessage("É necessário inserir Débito ou Crédito válido!");

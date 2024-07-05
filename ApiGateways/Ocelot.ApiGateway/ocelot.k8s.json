@@ -15,6 +15,14 @@
     },
     //CashFlow API
     {
+      "DownstreamPathTemplate": "/api/cashflow/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "cashflow",
+      "UpstreamPathTemplate": "/api/cashflow/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    {
       "DownstreamPathTemplate": "/api/cashflow",
       "DownstreamScheme": "http",
       "ServiceName": "cashflow",

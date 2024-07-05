@@ -4,6 +4,7 @@ import { DailyConsolidatedComponent } from './components/daily-consolidated/dail
 import { CashflowComponent } from './components/cashflow/cashflow.component';
 import { CashFlow } from './CashFlow';
 import { DailyConsolidated } from './DailyConsolidated';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -20,22 +21,21 @@ export class AppComponent {
   private _compCF: CashflowComponent;
 
   constructor(compDC: DailyConsolidatedComponent,  compCF: CashflowComponent){
+    
     this._compDC = compDC;
     this._compCF = compCF;
     this.CreateConnection();
-    //this._compDC.registerOnServerEvents(this._hubConnection);
-    //this._compCF.registerOnServerEvents(this._hubConnection, this.cashFlows);
+    //setTimeout(() => { this.connectToMessageBroker();}, 2000);
+    //setTimeout(() => { this.startConnection();}, 2000);
     this.startConnection();
-    
-  }
-  connectToMessageBroker(){
-    this._hubConnection.invoke('ConnectToMessageBroker');
   }
 
   private CreateConnection(){
+    console.log('CreateConnection');
     this._hubConnection = new HubConnectionBuilder()
                               .withUrl("http://localhost:9010/hubs/brokerhub")
                               .build();
+
     this._hubConnection.on('ReceiveMessageCF', 
       (data: CashFlow[])=> 
       {  
@@ -55,11 +55,15 @@ export class AppComponent {
     .then(()=> {
       console.log('Hub connection started');
       this.connectToMessageBroker();
-      this._compDC.GetInitial();
-      this._compCF.GetInitial();
     })
     .catch(()=> {
       setTimeout(() => { this.startConnection();}, 5000);
     });
+  }
+  connectToMessageBroker()
+  {
+    this._hubConnection.invoke('ConnectToMessageBroker');
+    // this._compDC.GetInitial();
+    // this._compCF.GetInitial();
   }
 }

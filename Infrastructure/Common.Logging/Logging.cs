@@ -24,8 +24,9 @@ public static class Logging
 
             if (context.HostingEnvironment.IsDevelopment())
             {
-                loggerConfiguration.MinimumLevel.Override("CashFlow", LogEventLevel.Debug);
-                loggerConfiguration.MinimumLevel.Override("DailyConsolidated", LogEventLevel.Debug);
+                loggerConfiguration.MinimumLevel.Override("ChallengeCrf.Api", LogEventLevel.Debug);
+                loggerConfiguration.MinimumLevel.Override("ChallengeCrf.Application", LogEventLevel.Debug);
+                loggerConfiguration.MinimumLevel.Override("ChallengeCrf.Queue.Worker", LogEventLevel.Debug);
             }
 
             var elasticUrl = context.Configuration.GetValue<string>("ElasticConfiguration:Uri");
@@ -37,7 +38,9 @@ public static class Logging
                     AutoRegisterTemplate = true,
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv8,
                     IndexFormat = "CashFlow-Logs-{0:yyyy.MM.dd}",
-                    MinimumLogEventLevel = LogEventLevel.Debug,
+                    MinimumLogEventLevel = LogEventLevel.Information 
+                    | LogEventLevel.Debug 
+                    | LogEventLevel.Error,
                 });
             }
         };

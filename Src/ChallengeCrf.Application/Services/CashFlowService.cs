@@ -33,10 +33,10 @@ public  class CashFlowService : ICashFlowService
     public async Task<IAsyncEnumerable<CashFlowViewModel>> GetListAllAsync()
     {
         _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
-        var enumarable =_cashFlowRepository.GetAllCashFlowAsync();
+        var enumarable = await _cashFlowRepository.GetAllCashFlowAsync();
         var listResult = new List<CashFlowViewModel>();
         
-        await foreach (var item in await enumarable)
+        await foreach (var item in enumarable.Value)
             listResult.Add(_mapper.Map<CashFlowViewModel>(item));
 
         //var result = _mapper.Map<IAsyncEnumerable<CashFlow>, IAsyncEnumerable<CashFlowViewModel>>(await enumarable);

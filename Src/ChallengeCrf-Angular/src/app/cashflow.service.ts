@@ -35,7 +35,7 @@ export class CashflowService {
 
   RemoveRegister(cashFlowId: string) : Observable<any>{
     const apiUrl=`${this.url}/${cashFlowId}`;
-    return this.http.delete<number>(apiUrl, httpOptions);
+    return this.http.delete<string>(apiUrl, httpOptions);
   }
   
 }

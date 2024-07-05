@@ -33,11 +33,11 @@ services:
       - "15672:15672"
     networks:
       - challenge
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      interval: 10s
-      timeout: 10s
-      retries: 2
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:15672"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 2
 
   ocelot.apigateway:
     container_name: ocelotapigateway

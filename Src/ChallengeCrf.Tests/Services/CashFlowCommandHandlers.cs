@@ -11,6 +11,7 @@ using ChallengeCrf.Domain.Notifications;
 using FluentAssertions;
 using FluentResults;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.ValueObjects;
 
 namespace ChallengeCrf.Tests.Services;
 
@@ -154,8 +155,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e8430a28df8491b77420", "Teste de fluxo de caixa", -500.00, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(false);
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
         
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
@@ -172,8 +173,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e8430a28df8491b77420", "Teste de fluxo de caixa", 0, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(false);
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
 
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
@@ -190,8 +191,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e85952a677e5a9d1e039", string.Empty, 0, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(false);
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
 
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
@@ -209,9 +210,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e85952a677e5a9d1e039", "Teste de fluxo de caixa", 500.00, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(true);
-
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
 
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object,
             _unitOfWorkMock.Object,
@@ -234,8 +234,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e85952a677e5a9d1e039", "Teste de fluxo de caixa", 10, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(true);
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
 
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
@@ -252,8 +252,8 @@ public class CashFlowCommandHandlers
         // Arrange
         var command = new UpdateCashFlowCommand("6596e85952a677e5a9d1e039", "Teste de fluxo de caixa", 0, CashFlowEntry.Debit, DateTime.Now);
 
-        _cashFlowRepositoryMock.Setup(x => x.AddCashFlow(It.IsAny<CashFlow>()))
-            .ReturnsAsync(true);
+        _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
+            .ReturnsAsync(Result.Ok);
 
         var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action

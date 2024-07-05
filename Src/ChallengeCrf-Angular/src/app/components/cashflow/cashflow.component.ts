@@ -102,7 +102,7 @@ export class CashflowComponent {
         this.visibilidadeFormulario = false;
         alert("Lançamento enviado com sucesso");
         this.cashflowService.GetAll().subscribe((registros)=>{
-          this.cashflows = registros;
+          //this.cashflows = registros;
         });
       });
     }
@@ -113,7 +113,7 @@ export class CashflowComponent {
         this.visibilidadeFormulario = false;
           alert("Lançamento enviado com sucesso");
           this.cashflowService.GetAll().subscribe((registros)=>{
-            this.cashflows = registros;
+            //this.cashflows = registros;
           });
         }
       );
@@ -138,8 +138,8 @@ export class CashflowComponent {
     this.cashflowService.RemoveRegister(registerId).subscribe((resultado)=>{
       this.modalRef.hide();
       alert("Solicitação de exclusão de Lançamento enviado com sucesso");
-      this.cashflowService.GetAll().subscribe((registros)=>{
-        //this.registers = registros;
+      this.cashflowService.GetAll().subscribe((cacheflows)=>{
+        this.cashflows = cacheflows;
       });
     });
   }

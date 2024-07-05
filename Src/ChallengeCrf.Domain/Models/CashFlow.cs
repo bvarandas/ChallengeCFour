@@ -45,13 +45,10 @@ public sealed class CashFlow
     [ProtoMember(5)]
     public DateTime Date { get; set; }
 
-    [NotMapped]
-    [ProtoMember(6)]
-    public string Action { get; set; } =string.Empty;
 
     [ProtoMember(7)]
     public DailyConsolidated DailyConsolidated { get; set; } = null!;
-    public CashFlow(string id, string cashFlowId, string description, double cashValue, string entry, DateTime date, string action)
+    public CashFlow(string id, string cashFlowId, string description, double cashValue, string entry, DateTime date)
     {
         Id = new ObjectId(id);
         CashFlowId = cashFlowId;
@@ -59,16 +56,14 @@ public sealed class CashFlow
         Amount = cashValue;
         Entry = entry;
         Date = date;
-        Action = action;
     }
 
-    public CashFlow(string description, double cashValue, string entry, DateTime date, string action)
+    public CashFlow(string description, double cashValue, string entry, DateTime date)
     {
         Description = description;
         Amount = cashValue;
         Entry = entry;
         Date = date;
-        Action = action;
     }
 
     public CashFlow() { }

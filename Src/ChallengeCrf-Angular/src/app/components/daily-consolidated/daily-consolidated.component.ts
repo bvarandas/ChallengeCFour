@@ -23,7 +23,7 @@ export class DailyConsolidatedComponent {
   }
   public GetInitial(): void  {
     this.dailyConsolidatedService.GetByDate(new Date().toISOString()).subscribe(resultado=>{
-          this.dailyConsolidated = resultado;
+          //this.dailyConsolidated = resultado;
         });
 
   }
