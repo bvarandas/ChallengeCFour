@@ -10,49 +10,42 @@ Requisito arquitetural relevantes:
 
 ---
 
-A escolha por essa arquitetura de mensageria foi efetuada pelos requisitos arquiteturais prpostos no desafio.
+A escolha por essa arquitetura de mensageria foi efetuada pelos requisitos arquiteturais propostos no desafio.
 
 Arquitetura - Message/Event Driven e alguns elementos de Clean Architecture.
 * Command-> Event
 * Query-> Reply
 
-Usando  Filas do RabbiMQ para coreografia do ambiente - Importante na quantidade de mensagens (recebimento e entrega), e também inportante na alta disponibilidade e resiliência da entrega, pois foi implementado, Ack e NAck no consumer.
+Usando  **Filas do RabbiMQ** para coreografia do ambiente - Importante na quantidade de mensagens (recebimento e entrega), e também inportante na alta disponibilidade e resiliência da entrega, pois foi implementado, Ack e NAck no consumer.
 
-Protobuf para compactação na camada de transporte entre serviços - Importante na compactação das mensagens para transporte e para mensagens 
+**Protobuf** para compactação na camada de transporte entre serviços (Array de Bytes)- Importante na compactação das mensagens para transporte e para melhor armazenamento e envio pelo RabbitMQ.
 
-SignalR no response do para o client/Angular.(Tela)
+**SignalR** no response do para o client/Angular.(Tela) - Importante para recebimento assincrono das informações de Consolidado Diário e  Lançamento de Fluxo de caixa na tela.
 
+**Essa abordagem também restringe que cada serviço tenha sua responsabilidade seapradamente, garantindo a coesão da programação e também mantendo suas lógicas desacopladas.**
 
-
+**Entity Framework** - 
 ---
 
 Modelo da arquitetura C4
 
 
-![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/2b8261fd-794a-453e-b73a-0c254ee3d5d6)
+![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/2397d92e-5341-4899-90b0-a3f48ef0d13e)
 
 ---
 
 Padrões Criacionais usados:
-Factory
-Singleton
+* Singleton - para usar somente uma instancia de cada módulo
 
 Padrões Comportmentais
-Command
-Mediator 
+* Command
+* Mediator 
 
-Mais
-Command
-
-Domain Notification
-
-Ioc - Inversão de controle
-
-CQRS - com Coreografia
-
-Injeção de depedencia
-
-Unit of Work
+Mais Parterns
+* **Domain Notification** - para notificações centralizdas, validando os lançamentos na application
+* **CQRS - com Coreografia** - para leitura ficar separadamente da gravação, melhorando assim a performance da applicação
+* Injeção de depedencia - Injetando as dependências, para usarmos as interfaces dos objetos, desacoplando as chamadas dos métodos entre os objetos.
+* Unit of Work
 
 Event Sourcing (removido)
 
