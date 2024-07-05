@@ -18,7 +18,6 @@ public sealed class CashFlowCommandHandler : CommandHandler,
 {
     private readonly ICashFlowRepository _registerRepository;
     private readonly IMediatorHandler _mediator;
-
     public CashFlowCommandHandler(
         ICashFlowRepository registerRepository,
         IUnitOfWork uow,
