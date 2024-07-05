@@ -10,7 +10,8 @@ Requisito arquitetural relevantes:
 
 ---
 
-A escolha por essa arquitetura de mensageria foi efetuada pelos requisitos arquiteturais propostos no desafio.
+A escolha por essa arquitetura de mensageria foi fetia depois de analisarmos os requisitos arquiteturais propostos no desafio.
+É o tipo de arquitetura que usamos no mercado de capitais para trade e análise de risco pré-trade e pós-trade.
 
 Arquitetura - Message/Event Driven e alguns elementos de Clean Architecture.
 * Command-> Event
@@ -22,10 +23,13 @@ Usando  **Filas do RabbiMQ** para coreografia do ambiente - Importante na quanti
 
 **SignalR** no response do para o client/Angular.(Tela) - Importante para recebimento assincrono das informações de Consolidado Diário e  Lançamento de Fluxo de caixa na tela.
 
-**Essa abordagem também restringe que cada serviço tenha sua responsabilidade seapradamente, garantindo a coesão da programação e também mantendo suas lógicas desacopladas.**
+**Entity Framework** - Facilidade e rapidez na implementação. Hoje a perfomance  muito está muito satisfatória e a capacidade de gravação em lote. 
 
-**Entity Framework** - 
+**MongoDB** - NoSQL com Facilidade e rapidez na implementação. Ótima Perfomance e a capacidade de gravação em lote. O MongoDB também conta com conexões transacionadas. 
+
+**Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação e também mantendo suas lógicas desacopladas.**
 ---
+
 
 Modelo da arquitetura C4
 
@@ -44,12 +48,19 @@ Padrões Comportmentais
 Mais Parterns
 * **Domain Notification** - para notificações centralizdas, validando os lançamentos na application
 * **CQRS - com Coreografia** - para leitura ficar separadamente da gravação, melhorando assim a performance da applicação
-* Injeção de depedencia - Injetando as dependências, para usarmos as interfaces dos objetos, desacoplando as chamadas dos métodos entre os objetos.
-* Unit of Work
+* **Injeção de depedencia** - Injetando as dependências, para usarmos as interfaces dos objetos, desacoplando as chamadas dos métodos entre os objetos.
+* **Unit of Work** - O commit é feito nas handles para mantermos os objetos(repo/event) desacoplados, mandando eventos depois de salvar/deletar o command
+* **Event Sourcing** (removido) - Event Sourcing foi removido por questões de simplicidade do sistema, não achei necessário nesse tipo de sistema simples.
 
-Event Sourcing (removido)
-
-Alguns conceitos de solid tbm foram usados.
+Alguns conceitos de solid tbm foram usados, como:
+* **Single Responsibility Principle** - deve ter uma unica resposabilidade (falta de coesão, alto aclopamento, 
+dificuldades na implementação de testes automatizados, Dificuldade para reproveitar o código)
+* **Open/Close Principle** - As entidade devem ser abertas para ampliação, mas fechadas para  modificação. 
+(Usar abstract class ex. CashFlowCommand, concrete class InsertCashFlowCommand e UpdateCashFlowCommand)
+* **Interface Segregation Principle**- Muitas interfaces específicas são melhores do que uma interface geral 
+(Violação IRepositorio para repositório de CashFlow e DailyConsolidated. o Ideal é ICashFlowRepository, 
+e um IDailyConsolidatedRepository para cada classe)
+* **Dependency Inversion Principle** - Depender de abstrações e não de classes concretas.
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/765b8d2e-0ea2-4ee3-a30c-b0ef5e55f36e)
 
